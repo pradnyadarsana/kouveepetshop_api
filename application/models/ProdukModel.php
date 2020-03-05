@@ -1,7 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+date_default_timezone_set('Asia/Jakarta');
 
-class SupplierModel extends CI_Model
+class ProdukModel extends CI_Model
 {
     private $table = 'produk';
 
@@ -26,7 +27,7 @@ class SupplierModel extends CI_Model
    
     public function getAllAktif() {
         return $this->db->get_where('produk', ["aktif" => 1])->result();
-    } 
+    }
 
     public function store($request) { 
         $this->nama = $request->nama;
@@ -44,11 +45,12 @@ class SupplierModel extends CI_Model
     }
 
     public function update($request, $id_produk) { 
-        if (!empty($_FILES["gambar"]["name"])) {
+        $this->nama = $request->nama;
+        if (!empty($_FILES["gambar"])) {
             $image = $this->uploadImage();
         } else {
             $old_data = $this->db->get_where('produk', ["id_produk" => $id_produk])->row();
-            $image = $old_data['gambar'];
+            $image = $old_data->GAMBAR;
         }
         $updateData = [
             'nama' => $request->nama,
@@ -91,7 +93,7 @@ class SupplierModel extends CI_Model
     {
         $config['upload_path']          = './upload/produk/';
         $config['allowed_types']        = 'gif|jpg|png';
-        $config['file_name']            = $this->id_produk;
+        $config['file_name']            = $this->nama;
         $config['overwrite']			= true;
         $config['max_size']             = 4096; // 4MB
         // $config['max_width']            = 1024;

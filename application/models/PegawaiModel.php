@@ -2,12 +2,18 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 date_default_timezone_set('Asia/Jakarta');
 
-class JenisHewanModel extends CI_Model
+class PegawaiModel extends CI_Model
 {
-    private $table = 'jenis_hewan';
+    private $table = 'pegawai';
 
-    public $id_jenis_hewan;
+    public $id_pegawai;
     public $nama;
+    public $alamat;
+    public $tanggal_lahir;
+    public $telp;
+    public $username;
+    public $password;
+    public $role;
     public $created_at;
     public $created_by;
     public $modified_at;
@@ -21,11 +27,17 @@ class JenisHewanModel extends CI_Model
     public function Rules() { return $this->rule; }
    
     public function getAllAktif() {
-        return $this->db->get_where('jenis_hewan', ["aktif" => 1])->result();
+        return $this->db->get_where('pegawai', ["aktif" => 1])->result();
     } 
 
     public function store($request) { 
         $this->nama = $request->nama;
+        $this->alamat = $request->alamat;
+        $this->tanggal_lahir = $request->tanggal_lahir;
+        $this->telp = $request->telp;
+        $this->username = $request->username;
+        $this->password = $request->password;
+        $this->role = $request->role;
         $this->created_by = $request->created_by;
         $this->aktif=1;
         if($this->db->insert($this->table, $this)){
@@ -34,25 +46,42 @@ class JenisHewanModel extends CI_Model
         return ['msg'=>'Gagal','error'=>true];
     }
 
-    public function update($request, $id_jenis_hewan) { 
+    public function update($request, $id_pegawai) { 
         $updateData = [
-            'nama' => $request->nama, 
+            'nama' => $request->nama,
+            'alamat' => $request->alamat,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'telp' => $request->telp,
+            'username' => $request->username,
+            'role' => $request->role,
             'modified_by' => $request->modified_by,
             'modified_at' => date('Y-m-d H:i:s')
         ];
-        if($this->db->where('id_jenis_hewan',$id_jenis_hewan)->update($this->table, $updateData)){
+        if($this->db->where('id_pegawai',$id_pegawai)->update($this->table, $updateData)){
             return ['msg'=>'Berhasil','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
     }
 
-    public function softDelete($request, $id_jenis_hewan){
+    public function softDelete($request, $id_pegawai){
         $updateData = [
             'aktif' => 0,
             'delete_by' => $request->delete_by,
             'delete_at' => date('Y-m-d H:i:s')
         ];
-        if($this->db->where('id_jenis_hewan',$id_jenis_hewan)->update($this->table, $updateData)){
+        if($this->db->where('id_pegawai',$id_pegawai)->update($this->table, $updateData)){
+            return ['msg'=>'Berhasil','error'=>false];
+        }
+        return ['msg'=>'Gagal','error'=>true];
+    }
+
+    public function change_password($request, $id_pegawai){
+        $updateData = [
+            'password' => $request->password,
+            'modified_by' => $request->modified_by,
+            'modified_at' => date('Y-m-d H:i:s')
+        ];
+        if($this->db->where('id_pegawai',$id_pegawai)->update($this->table, $updateData)){
             return ['msg'=>'Berhasil','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
