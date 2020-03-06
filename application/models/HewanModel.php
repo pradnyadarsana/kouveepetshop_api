@@ -2,14 +2,15 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 date_default_timezone_set('Asia/Jakarta');
 
-class HargaLayananModel extends CI_Model
+class HewanModel extends CI_Model
 {
-    private $table = 'harga_layanan';
+    private $table = 'hewan';
 
-    public $id_harga_layanan;
-    public $id_layanan;
-    public $id_ukuran_hewan;
-    public $harga;
+    public $id_hewan;
+    public $id_pelanggan;
+    public $id_jenis_hewan;
+    public $nama;
+    public $tanggal_lahir;
     public $created_at;
     public $created_by;
     public $modified_at;
@@ -24,22 +25,23 @@ class HargaLayananModel extends CI_Model
    
     public function getAllAktif() {
         //return $this->db->get_where('harga_layanan', ["aktif" => 1])->result();
-        $this->db->select('id_harga_layanan, harga_layanan.id_layanan, layanan.nama "nama_layanan", harga_layanan.id_ukuran_hewan, 
-                        ukuran_hewan.nama "nama_ukuran_hewan", harga_layanan.harga,
-                        harga_layanan.created_at, harga_layanan.created_by, harga_layanan.modified_at, harga_layanan.modified_by,
-                        harga_layanan.delete_at, harga_layanan.delete_by, harga_layanan.aktif');
-        $this->db->from('harga_layanan');
-        $this->db->join('layanan', 'harga_layanan.id_layanan = layanan.id_layanan');
-        $this->db->join('ukuran_hewan', 'harga_layanan.id_ukuran_hewan = ukuran_hewan.id_ukuran_hewan');
-        $this->db->where('harga_layanan.aktif',1);
-        $this->db->order_by('harga_layanan.id_harga_layanan ASC');
+        $this->db->select('id_hewan, hewan.id_pelanggan, pelanggan.nama "nama_pelanggan", pelanggan.alamat "alamat_pelanggan", 
+                        pelanggan.tanggal_lahir "tanggal_lahir_pelanggan", pelanggan.telp "telp_pelanggan",
+                        hewan.id_jenis_hewan, jenis_hewan.nama "nama_jenis_hewan", hewan.nama "nama_hewan", hewan.tanggal_lahir "tanggal_lahir_hewan", 
+                        hewan.created_at, hewan.created_by, hewan.modified_at, hewan.modified_by, hewan.delete_at, hewan.delete_by, hewan.aktif');
+        $this->db->from('hewan');
+        $this->db->join('pelanggan', 'hewan.id_pelanggan = pelanggan.id_pelanggan');
+        $this->db->join('jenis_hewan', 'hewan.id_jenis_hewan = jenis_hewan.id_jenis_hewan');
+        $this->db->where('hewan.aktif',1);
+        $this->db->order_by('hewan.id_hewan ASC');
         return $this->db->get()->result();
     }
 
     public function store($request) { 
-        $this->id_layanan = $request->id_layanan;
-        $this->id_ukuran_hewan = $request->id_ukuran_hewan;
-        $this->harga = $request->harga;
+        $this->id_pelanggan = $request->id_pelanggan;
+        $this->id_jenis_hewan = $request->id_jenis_hewan;
+        $this->nama = $request->nama;
+        $this->tanggal_lahir = $request->tanggal_lahir;
         $this->created_by = $request->created_by;
         $this->aktif=1;
         if($this->db->insert($this->table, $this)){
@@ -48,27 +50,28 @@ class HargaLayananModel extends CI_Model
         return ['msg'=>'Gagal','error'=>true];
     }
 
-    public function update($request, $id_harga_layanan) { 
+    public function update($request, $id_hewan) { 
         $updateData = [
-            'id_layanan' => $request->id_layanan,
-            'id_ukuran_hewan' => $request->id_ukuran_hewan,
-            'harga' => $request->harga, 
+            'id_pelanggan' => $request->id_pelanggan,
+            'id_jenis_hewan' => $request->id_jenis_hewan,
+            'nama' => $request->nama,
+            'tanggal_lahir' => $request->tanggal_lahir,
             'modified_by' => $request->modified_by,
             'modified_at' => date('Y-m-d H:i:s')
         ];
-        if($this->db->where('id_harga_layanan',$id_harga_layanan)->update($this->table, $updateData)){
+        if($this->db->where('id_hewan',$id_hewan)->update($this->table, $updateData)){
             return ['msg'=>'Berhasil','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
     }
 
-    public function softDelete($request, $id_harga_layanan){
+    public function softDelete($request, $id_hewan){
         $updateData = [
             'aktif' => 0,
             'delete_by' => $request->delete_by,
             'delete_at' => date('Y-m-d H:i:s')
         ];
-        if($this->db->where('id_harga_layanan',$id_harga_layanan)->update($this->table, $updateData)){
+        if($this->db->where('id_hewan',$id_hewan)->update($this->table, $updateData)){
             return ['msg'=>'Berhasil','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
