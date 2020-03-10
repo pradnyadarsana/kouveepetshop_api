@@ -19,6 +19,10 @@ Class Produk extends RestController{
         return $this->returnData($this->db->get('produk')->result(), false);
     }
 
+    public function search_get($id){
+        return $this->returnData($this->db->get_where('produk', ["id_produk" => $id])->result(), false);
+    }
+
     public function index_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->ProdukModel->rules();

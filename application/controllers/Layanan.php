@@ -19,6 +19,10 @@ Class Layanan extends RestController{
         return $this->returnData($this->db->get('layanan')->result(), false);
     }
 
+    public function search_get($id){
+        return $this->returnData($this->db->get_where('layanan', ["id_layanan" => $id])->result(), false);
+    }
+
     public function index_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->LayananModel->rules();

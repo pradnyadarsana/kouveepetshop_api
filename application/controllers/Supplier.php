@@ -19,6 +19,10 @@ Class Supplier extends RestController{
         return $this->returnData($this->db->get('supplier')->result(), false);
     }
 
+    public function search_get($id){
+        return $this->returnData($this->db->get_where('supplier', ["id_supplier" => $id])->result(), false);
+    }
+
     public function index_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->SupplierModel->rules();

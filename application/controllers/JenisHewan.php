@@ -19,6 +19,10 @@ Class JenisHewan extends RestController{
         return $this->returnData($this->db->get('jenis_hewan')->result(), false);
     }
 
+    public function search_get($id){
+        return $this->returnData($this->db->get_where('jenis_hewan', ["id_jenis_hewan" => $id])->result(), false);
+    }
+
     public function index_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->JenisHewanModel->rules();

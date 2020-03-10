@@ -12,6 +12,14 @@ Class Hewan extends RestController{
     }
 
     public function index_get(){
+        return $this->returnData($this->db->get_where('hewan', ["aktif" => 1])->result(), false);
+    }
+
+    public function all_get(){
+        return $this->returnData($this->db->get('hewan')->result(), false);
+    }
+
+    public function getWithJoin_get(){
         $this->db->select('id_hewan, hewan.id_pelanggan, pelanggan.nama "nama_pelanggan", pelanggan.alamat "alamat_pelanggan", 
                         pelanggan.tanggal_lahir "tanggal_lahir_pelanggan", pelanggan.telp "telp_pelanggan",
                         hewan.id_jenis_hewan, jenis_hewan.nama "nama_jenis_hewan", hewan.nama "nama_hewan", hewan.tanggal_lahir "tanggal_lahir_hewan", 
@@ -26,7 +34,7 @@ Class Hewan extends RestController{
         return $this->returnData($this->db->get()->result(), false);
     }
 
-    public function all_get(){
+    public function getAllWithJoin_get(){
         $this->db->select('id_hewan, hewan.id_pelanggan, pelanggan.nama "nama_pelanggan", pelanggan.alamat "alamat_pelanggan", 
                         pelanggan.tanggal_lahir "tanggal_lahir_pelanggan", pelanggan.telp "telp_pelanggan",
                         hewan.id_jenis_hewan, jenis_hewan.nama "nama_jenis_hewan", hewan.nama "nama_hewan", hewan.tanggal_lahir "tanggal_lahir_hewan", 
@@ -36,6 +44,10 @@ Class Hewan extends RestController{
         $this->db->join('jenis_hewan', 'hewan.id_jenis_hewan = jenis_hewan.id_jenis_hewan');
         $this->db->order_by('hewan.id_hewan ASC');
         return $this->returnData($this->db->get()->result(), false);
+    }
+
+    public function search_get($id){
+        return $this->returnData($this->db->get_where('hewan', ["id_hewan" => $id])->result(), false);
     }
 
     public function index_post($id = null){

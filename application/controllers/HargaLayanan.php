@@ -12,6 +12,14 @@ Class HargaLayanan extends RestController{
     }
 
     public function index_get(){
+        return $this->returnData($this->db->get_where('harga_layanan', ["aktif" => 1])->result(), false);
+    }
+
+    public function all_get(){
+        return $this->returnData($this->db->get('harga_layanan')->result(), false);
+    }
+
+    public function getWithJoin_get(){
         $this->db->select('id_harga_layanan, harga_layanan.id_layanan, layanan.nama "nama_layanan", harga_layanan.id_ukuran_hewan, 
                         ukuran_hewan.nama "nama_ukuran_hewan", harga_layanan.harga,
                         harga_layanan.created_at, harga_layanan.created_by, harga_layanan.modified_at, harga_layanan.modified_by,
@@ -26,7 +34,7 @@ Class HargaLayanan extends RestController{
         return $this->returnData($this->db->get()->result(), false);
     }
 
-    public function all_get(){
+    public function getAllWithJoin_get(){
         $this->db->select('id_harga_layanan, harga_layanan.id_layanan, layanan.nama "nama_layanan", harga_layanan.id_ukuran_hewan, 
                         ukuran_hewan.nama "nama_ukuran_hewan", harga_layanan.harga,
                         harga_layanan.created_at, harga_layanan.created_by, harga_layanan.modified_at, harga_layanan.modified_by,
@@ -36,6 +44,10 @@ Class HargaLayanan extends RestController{
         $this->db->join('ukuran_hewan', 'harga_layanan.id_ukuran_hewan = ukuran_hewan.id_ukuran_hewan');
         $this->db->order_by('harga_layanan.id_harga_layanan ASC');
         return $this->returnData($this->db->get()->result(), false);
+    }
+
+    public function search_get($id){
+        return $this->returnData($this->db->get_where('harga_layanan', ["id_harga_layanan" => $id])->result(), false);
     }
 
     public function index_post($id = null){

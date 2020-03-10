@@ -19,6 +19,10 @@ Class UkuranHewan extends RestController{
         return $this->returnData($this->db->get('ukuran_hewan')->result(), false);
     }
 
+    public function search_get($id){
+        return $this->returnData($this->db->get_where('ukuran_hewan', ["id_ukuran_hewan" => $id])->result(), false);
+    }
+
     public function index_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->UkuranHewanModel->rules();
