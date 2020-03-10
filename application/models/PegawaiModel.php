@@ -36,7 +36,7 @@ class PegawaiModel extends CI_Model
         $this->tanggal_lahir = $request->tanggal_lahir;
         $this->telp = $request->telp;
         $this->username = $request->username;
-        $this->password = $request->password;
+        $this->password = password_hash($request->password, PASSWORD_BCRYPT);
         $this->role = $request->role;
         $this->created_by = $request->created_by;
         $this->aktif=1;
@@ -77,7 +77,7 @@ class PegawaiModel extends CI_Model
 
     public function change_password($request, $id_pegawai){
         $updateData = [
-            'password' => $request->password,
+            'password' => password_hash($request->password, PASSWORD_BCRYPT),
             'modified_by' => $request->modified_by,
             'modified_at' => date('Y-m-d H:i:s')
         ];
