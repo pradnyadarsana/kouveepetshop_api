@@ -50,6 +50,10 @@ Class HargaLayanan extends RestController{
         return $this->returnData($this->db->get_where('harga_layanan', ["id_harga_layanan" => $id])->result(), false);
     }
 
+    public function searchByIdLayanan_get($id){
+        return $this->returnData($this->db->get_where('harga_layanan', ["id_layanan" => $id])->result(), false);
+    }
+
     public function index_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->HargaLayananModel->rules();
