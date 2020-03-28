@@ -95,5 +95,13 @@ class PegawaiModel extends CI_Model
     //     }
     //     return ['msg'=>'Gagal','error'=>true];
     // }
+
+    public function verify($request){
+        $pegawai = $this->db->get_where('pegawai', ["username" => $request->username])->row();
+        if(!empty($pegawai) && password_verify($request->password, $pegawai->password)){
+            return ['msg'=>$pegawai,'error'=>false];
+        }
+        return ['msg'=>'Gagal','error'=>true];
+    }
 }
 ?>

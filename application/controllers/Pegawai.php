@@ -211,6 +211,34 @@ Class Pegawai extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
+    public function auth_post(){
+        $validation = $this->form_validation;
+        $rule = $this->PegawaiModel->rules();
+        array_push($rule,
+            [
+                'field' => 'username',
+                'label' => 'username',
+                'rules' => 'required'
+            ],
+            [
+                'field' => 'password',
+                'label' => 'password',
+                'rules' => 'required'
+            ]
+        );
+        $validation->set_rules($rule);
+        if (!$validation->run()) {
+            return $this->returnData($this->form_validation->error_array(), true);
+        }        
+
+        $pegawai = new PegawaiData();
+        $pegawai->username = $this->post('username');
+        $pegawai->password = $this->post('password');
+
+        $response = $this->PegawaiModel->verify($pegawai);
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
     public function returnData($msg,$error){
         $response['error']=$error;
         $response['message']=$msg;
