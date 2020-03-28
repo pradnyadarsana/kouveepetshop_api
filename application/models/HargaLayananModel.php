@@ -48,6 +48,28 @@ class HargaLayananModel extends CI_Model
         return ['msg'=>'Gagal','error'=>true];
     }
 
+    public function storeMultiple($request) {
+        $jsondata = json_decode($request);
+        $dataset = [];
+        foreach($jsondata as $data){
+            array_push($dataset, 
+                [
+                    'id_layanan' => $data['id_layanan'],
+                    'id_ukuran_hewan' => $data['id_ukuran_hewan'],
+                    'harga' => $data['harga'],
+                    'created_by' => $data['created_by'],
+                    'aktif' => 1,
+                ]
+            );
+        }
+        //echo count($dataset);
+        $query = $this->db->insert_batch($this->table, $dataset);
+        if($query){
+            return ['msg'=>'Berhasil','error'=>false];
+        }
+        return ['msg'=>'Gagal','error'=>true];
+    }
+
     public function update($request, $id_harga_layanan) { 
         $updateData = [
             'id_layanan' => $request->id_layanan,
@@ -74,13 +96,13 @@ class HargaLayananModel extends CI_Model
         return ['msg'=>'Gagal','error'=>true];
     }
     
-    // public function destroy($id){
-    //     if (empty($this->db->select('*')->where(array('id' => $id))->get($this->table)->row())) return ['msg'=>'Id tidak ditemukan','error'=>true];
+    public function destroy($id){
+        if (empty($this->db->select('*')->where(array('id_layanan' => $id))->get($this->table)->row())) return ['msg'=>'Id tidak ditemukan','error'=>true];
         
-    //     if($this->db->delete($this->table, array('id' => $id))){
-    //         return ['msg'=>'Berhasil','error'=>false];
-    //     }
-    //     return ['msg'=>'Gagal','error'=>true];
-    // }
+        if($this->db->delete($this->table, array('id_layanan' => $id))){
+            return ['msg'=>'Berhasil','error'=>false];
+        }
+        return ['msg'=>'Gagal','error'=>true];
+    }
 }
 ?>

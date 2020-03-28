@@ -96,6 +96,44 @@ Class HargaLayanan extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
+    public function insertMultiple_post($id = null){
+        // $validation = $this->form_validation;
+        // $rule = $this->HargaLayananModel->rules();
+        // if($id == null){
+        //     array_push($rule,
+        //         [
+        //             'field' => 'id_layanan',
+        //             'label' => 'id_layanan',
+        //             'rules' => 'required'
+        //         ],
+        //         [
+        //             'field' => 'id_ukuran_hewan',
+        //             'label' => 'id_ukuran_hewan',
+        //             'rules' => 'required'
+        //         ],
+        //         [
+        //             'field' => 'harga',
+        //             'label' => 'harga',
+        //             'rules' => 'required|integer'
+        //         ],
+        //         [
+        //             'field' => 'created_by',
+        //             'label' => 'created_by',
+        //             'rules' => 'required'
+        //         ]
+        //     );
+        // }
+        // $validation->set_rules($rule);
+		// if (!$validation->run()) {
+		// 	return $this->returnData($this->form_validation->error_array(), true);
+        // }
+        $datahargalayanan = $this->post('harga_layanan');
+        if($id == null){
+            $response = $this->HargaLayananModel->storeMultiple($datahargalayanan);
+        }
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
     public function update_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->HargaLayananModel->rules();
@@ -162,13 +200,13 @@ Class HargaLayanan extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
-    // public function index_delete($id = null){
-    //     if($id == null){
-	// 		return $this->returnData('Parameter Id Tidak Ditemukan', true);
-    //     }
-    //     $response = $this->PricelistModel->destroy($id);
-    //     return $this->returnData($response['msg'], $response['error']);
-    // }
+    public function index_delete($id = null){
+        if($id == null){
+			return $this->returnData('Parameter Id Tidak Ditemukan', true);
+        }
+        $response = $this->HargaLayananModel->destroy($id);
+        return $this->returnData($response['msg'], $response['error']);
+    }
 
     public function returnData($msg,$error){
         $response['error']=$error;

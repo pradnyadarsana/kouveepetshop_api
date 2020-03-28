@@ -107,13 +107,13 @@ Class Layanan extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
-    // public function index_delete($id = null){
-    //     if($id == null){
-	// 		return $this->returnData('Parameter Id Tidak Ditemukan', true);
-    //     }
-    //     $response = $this->PricelistModel->destroy($id);
-    //     return $this->returnData($response['msg'], $response['error']);
-    // }
+    public function index_delete($id = null){
+        if($id == null){
+			return $this->returnData('Parameter Id Tidak Ditemukan', true);
+        }
+        $response = $this->LayananModel->destroy($id);
+        return $this->returnData($response['msg'], $response['error']);
+    }
 
     public function returnData($msg,$error){
         $response['error']=$error;

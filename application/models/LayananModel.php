@@ -29,7 +29,7 @@ class LayananModel extends CI_Model
         $this->created_by = $request->created_by;
         $this->aktif=1;
         if($this->db->insert($this->table, $this)){
-            return ['msg'=>'Berhasil','error'=>false];
+            return ['msg'=>$this->db->insert_id(),'error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
     }
@@ -58,13 +58,13 @@ class LayananModel extends CI_Model
         return ['msg'=>'Gagal','error'=>true];
     }
     
-    // public function destroy($id){
-    //     if (empty($this->db->select('*')->where(array('id' => $id))->get($this->table)->row())) return ['msg'=>'Id tidak ditemukan','error'=>true];
+    public function destroy($id){
+        if (empty($this->db->select('*')->where(array('id_layanan' => $id))->get($this->table)->row())) return ['msg'=>'Id tidak ditemukan','error'=>true];
         
-    //     if($this->db->delete($this->table, array('id' => $id))){
-    //         return ['msg'=>'Berhasil','error'=>false];
-    //     }
-    //     return ['msg'=>'Gagal','error'=>true];
-    // }
+        if($this->db->delete($this->table, array('id_layanan' => $id))){
+            return ['msg'=>'Berhasil','error'=>false];
+        }
+        return ['msg'=>'Gagal','error'=>true];
+    }
 }
 ?>
