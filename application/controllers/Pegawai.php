@@ -117,7 +117,7 @@ Class Pegawai extends RestController{
                 [
                     'field' => 'username',
                     'label' => 'username',
-                    'rules' => 'required|alpha_numeric|min_length[4]|is_unique[pegawai.username]'
+                    'rules' => 'required|alpha_numeric|min_length[4]'
                 ],
                 [
                     'field' => 'role',
