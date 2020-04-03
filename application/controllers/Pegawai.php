@@ -14,6 +14,9 @@ Class Pegawai extends RestController{
     public function index_get(){
         return $this->returnData($this->db->get_where('pegawai', ["aktif" => 1])->result(), false);
     }
+    public function index_getNonAktif(){
+        return $this->returnData($this->db->get_where('pegawai', ["aktif" => 0])->result(), false);
+    }
 
     public function all_get(){
         return $this->returnData($this->db->get('pegawai')->result(), false);

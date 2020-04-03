@@ -29,6 +29,9 @@ class PegawaiModel extends CI_Model
     public function getAllAktif() {
         return $this->db->get_where('pegawai', ["aktif" => 1])->result();
     } 
+    public function getAllNonAktif() {
+        return $this->db->get_where('pegawai', ["aktif" => 0])->result();
+    } 
 
     public function store($request) { 
         $this->nama = $request->nama;
