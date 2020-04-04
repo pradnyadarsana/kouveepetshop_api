@@ -15,6 +15,10 @@ Class Pegawai extends RestController{
         return $this->returnData($this->db->get_where('pegawai', ["aktif" => 1])->result(), false);
     }
 
+    public function nonAktif_get(){
+        return $this->returnData($this->db->get_where('pegawai', ["aktif" => 0])->result(), false);
+    }
+
     public function all_get(){
         return $this->returnData($this->db->get('pegawai')->result(), false);
     }
@@ -117,7 +121,7 @@ Class Pegawai extends RestController{
                 [
                     'field' => 'username',
                     'label' => 'username',
-                    'rules' => 'required|alpha_numeric|min_length[4]|is_unique[pegawai.username]'
+                    'rules' => 'required|alpha_numeric|min_length[4]'
                 ],
                 [
                     'field' => 'role',
