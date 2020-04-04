@@ -15,6 +15,10 @@ Class HargaLayanan extends RestController{
         return $this->returnData($this->db->get_where('harga_layanan', ["aktif" => 1])->result(), false);
     }
 
+    public function nonAktif_get(){
+        return $this->returnData($this->db->get_where('harga_layanan', ["aktif" => 0])->result(), false);
+    }
+
     public function all_get(){
         return $this->returnData($this->db->get('harga_layanan')->result(), false);
     }

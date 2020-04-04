@@ -15,6 +15,10 @@ Class UkuranHewan extends RestController{
         return $this->returnData($this->db->get_where('ukuran_hewan', ["aktif" => 1])->result(), false);
     }
 
+    public function nonAktif_get(){
+        return $this->returnData($this->db->get_where('ukuran_hewan', ["aktif" => 0])->result(), false);
+    }
+
     public function all_get(){
         return $this->returnData($this->db->get('ukuran_hewan')->result(), false);
     }

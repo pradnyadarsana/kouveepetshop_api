@@ -15,6 +15,10 @@ Class Pelanggan extends RestController{
         return $this->returnData($this->db->get_where('pelanggan', ["aktif" => 1])->result(), false);
     }
 
+    public function nonAktif_get(){
+        return $this->returnData($this->db->get_where('pelanggan', ["aktif" => 0])->result(), false);
+    }
+
     public function all_get(){
         return $this->returnData($this->db->get('pelanggan')->result(), false);
     }
