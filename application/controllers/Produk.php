@@ -24,7 +24,7 @@ Class Produk extends RestController{
     }
 
     public function search_get($id){
-        return $this->returnData($this->db->get_where('produk', ["id_produk" => $id])->result(), false);
+        return $this->returnData($this->db->get_where('produk', ["id_produk" => $id])->row(), false);
     }
 
     public function index_post($id = null){

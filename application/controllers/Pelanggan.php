@@ -24,7 +24,7 @@ Class Pelanggan extends RestController{
     }
 
     public function search_get($id){
-        return $this->returnData($this->db->get_where('pelanggan', ["id_pelanggan" => $id])->result(), false);
+        return $this->returnData($this->db->get_where('pelanggan', ["id_pelanggan" => $id])->row(), false);
     }
 
     public function index_post($id = null){

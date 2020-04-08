@@ -24,7 +24,7 @@ Class Pegawai extends RestController{
     }
 
     public function search_get($id){
-        return $this->returnData($this->db->get_where('pegawai', ["id_pegawai" => $id])->result(), false);
+        return $this->returnData($this->db->get_where('pegawai', ["id_pegawai" => $id])->row(), false);
     }
 
     public function index_post($id = null){

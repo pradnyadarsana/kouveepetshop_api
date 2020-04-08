@@ -51,7 +51,7 @@ Class Hewan extends RestController{
     }
 
     public function search_get($id){
-        return $this->returnData($this->db->get_where('hewan', ["id_hewan" => $id])->result(), false);
+        return $this->returnData($this->db->get_where('hewan', ["id_hewan" => $id])->row(), false);
     }
 
     public function index_post($id = null){

@@ -51,7 +51,7 @@ Class HargaLayanan extends RestController{
     }
 
     public function search_get($id){
-        return $this->returnData($this->db->get_where('harga_layanan', ["id_harga_layanan" => $id])->result(), false);
+        return $this->returnData($this->db->get_where('harga_layanan', ["id_harga_layanan" => $id])->row(), false);
     }
 
     public function searchByIdLayanan_get($id){

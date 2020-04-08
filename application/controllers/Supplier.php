@@ -24,7 +24,7 @@ Class Supplier extends RestController{
     }
 
     public function search_get($id){
-        return $this->returnData($this->db->get_where('supplier', ["id_supplier" => $id])->result(), false);
+        return $this->returnData($this->db->get_where('supplier', ["id_supplier" => $id])->row(), false);
     }
 
     public function index_post($id = null){
