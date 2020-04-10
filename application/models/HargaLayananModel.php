@@ -50,17 +50,16 @@ class HargaLayananModel extends CI_Model
 
     public function storeMultiple($request) {
         $jsondata = json_decode($request);
-        $dataset = [];
+        $dataset = array();
         foreach($jsondata as $data){
-            array_push($dataset, 
-                [
-                    'id_layanan' => $data['id_layanan'],
-                    'id_ukuran_hewan' => $data['id_ukuran_hewan'],
-                    'harga' => $data['harga'],
-                    'created_by' => $data['created_by'],
+            $dataset[] =  
+                array(
+                    'id_layanan' => $data->id_layanan,
+                    'id_ukuran_hewan' => $data->id_ukuran_hewan,
+                    'harga' => $data->harga,
+                    'created_by' => $data->created_by,
                     'aktif' => 1,
-                ]
-            );
+                );
         }
         //echo count($dataset);
         $query = $this->db->insert_batch($this->table, $dataset);
