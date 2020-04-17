@@ -51,7 +51,9 @@ class HargaLayananModel extends CI_Model
     public function storeMultiple($request) {
         $jsondata = json_decode($request);
         $dataset = array();
+        $id_layanan = 0;
         foreach($jsondata as $data){
+            $id_layanan = $data->id_layanan;
             $dataset[] =  
                 array(
                     'id_layanan' => $data->id_layanan,
@@ -66,6 +68,7 @@ class HargaLayananModel extends CI_Model
         if($query){
             return ['msg'=>'Berhasil','error'=>false];
         }
+        $this->db->delete('layanan', array('id_layanan' => $id_layanan));
         return ['msg'=>'Gagal','error'=>true];
     }
 

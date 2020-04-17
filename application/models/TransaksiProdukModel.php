@@ -42,11 +42,13 @@ class TransaksiProdukModel extends CI_Model
         $this->id_transaksi_produk = $next_id;
         $this->id_customer_service = $request->id_customer_service;
         $this->id_hewan = $request->id_hewan;
+        $this->subtotal = $request->subtotal;
         $this->diskon = $request->diskon;
+        $this->total = $request->total;
         $this->status = 'Menunggu Pembayaran';
         $this->created_by = $request->created_by;
         if($this->db->insert($this->table, $this)){
-            $temp = $this->updateTotal($next_id, $request->diskon);
+            //$temp = $this->updateTotal($next_id, $request->diskon);
             return ['msg'=>$next_id,'error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
@@ -55,14 +57,16 @@ class TransaksiProdukModel extends CI_Model
     public function update($request, $id_transaksi_produk) {
         $updateData = [
             'id_hewan' => $request->id_hewan,
+            'subtotal' => $request->subtotal,
             'diskon' => $request->diskon,
+            'total' => $request->total,
             'modified_at' => date('Y-m-d H:i:s'),
             'modified_by' => $request->modified_by
         ];
         $data = $this->db->get_where('transaksi_produk',['id_transaksi_produk'=>$id_transaksi_produk, 'status'=> 'Menunggu Pembayaran'])->row();
         if($data){
             $this->db->where(['id_transaksi_produk'=>$id_transaksi_produk, 'status'=> 'Menunggu Pembayaran'])->update($this->table, $updateData);
-            $temp = $this->updateTotal($id_transaksi_produk, $request->diskon);
+            //$temp = $this->updateTotal($id_transaksi_produk, $request->diskon);
             return ['msg'=>'Berhasil','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
@@ -111,7 +115,6 @@ class TransaksiProdukModel extends CI_Model
                     'total' => $pricedata->total_harga-$diskon
                 ];
             }
-             
         }
         
         if($this->db->where('id_transaksi_produk',$id_transaksi_produk)->update($this->table, $updateData)){

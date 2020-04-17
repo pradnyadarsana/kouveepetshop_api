@@ -50,7 +50,9 @@ Class TransaksiProduk extends RestController{
         $transaksi = new TransaksiProdukData();
         $transaksi->id_customer_service = $this->post('id_customer_service');
         $transaksi->id_hewan = $this->post('id_hewan');
+        $transaksi->subtotal = $this->post('subtotal');
         $transaksi->diskon = $this->post('diskon');
+        $transaksi->total = $this->post('total');
         $transaksi->created_by = $this->post('created_by');
 
         $response = $this->TransaksiProdukModel->store($transaksi);
@@ -74,7 +76,9 @@ Class TransaksiProduk extends RestController{
 
         $transaksi = new TransaksiProdukData();
         $transaksi->id_hewan = $this->post('id_hewan');
+        $transaksi->subtotal = $this->post('subtotal');
         $transaksi->diskon = $this->post('diskon');
+        $transaksi->total = $this->post('total');
         $transaksi->modified_by = $this->post('modified_by');
         if($id == null){
             return $this->returnData('Parameter ID tidak ditemukan', true);
