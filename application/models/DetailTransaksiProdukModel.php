@@ -39,23 +39,25 @@ class DetailTransaksiProdukModel extends CI_Model
 
     public function storeMultiple($request) {
         $jsondata = json_decode($request);
-        $dataset = [];
+        $dataset = array();
+        $id_transaksi_produk = 0;
         foreach($jsondata as $data){
-            array_push($dataset, 
-                [
+            $id_transaksi_produk = $data->id_transaksi_produk;
+            $dataset[] = 
+                array(
                     'id_transaksi_produk' => $data->id_transaksi_produk,
                     'id_produk' => $data->id_produk,
                     'jumlah' => $data->jumlah,
                     'total_harga' => $data->total_harga,
                     'created_by' => $data->created_by,
-                ]
-            );
+                );
         }
         //echo count($dataset);
         if($this->db->insert_batch($this->table, $dataset)){
-            $temp = updateTotal($data->id_transaksi_produk);
+            //$temp = updateTotal($data->id_transaksi_produk);
             return ['msg'=>'Berhasil','error'=>false];
         }
+        $this->db->delete('transaksi_produk', array('id_transaksi_produk' => $id_transaksi_produk));
         return ['msg'=>'Gagal','error'=>true];
     }
 
@@ -101,7 +103,6 @@ class DetailTransaksiProdukModel extends CI_Model
                     'total' => $pricedata->total_harga-$transdata->diskon
                 ];
             }
-             
         }
         
         if($this->db->where('id_transaksi_produk',$id_transaksi_produk)->update('transaksi_produk', $updateData)){

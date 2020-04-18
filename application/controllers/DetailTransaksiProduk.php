@@ -70,6 +70,14 @@ Class DetailTransaksiProduk extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
+    public function insertMultiple_post(){
+        $data = $this->post('detail_transaksi_produk');
+        //if($id == null){
+        $response = $this->DetailTransaksiProdukModel->storeMultiple($data);
+        //}
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
     public function update_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->DetailTransaksiProdukModel->rules();
