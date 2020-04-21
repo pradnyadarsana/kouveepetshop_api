@@ -69,7 +69,7 @@ Class DetailTransaksiProduk extends RestController{
         $response = $this->DetailTransaksiProdukModel->store($transaksi);
         return $this->returnData($response['msg'], $response['error']);
     }
-
+    
     public function insertMultiple_post(){
         $data = $this->post('detail_transaksi_produk');
         //if($id == null){
@@ -115,11 +115,27 @@ Class DetailTransaksiProduk extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
+    public function updateMultiple_post(){
+        $data = $this->post('detail_transaksi_produk');
+        //if($id == null){
+        $response = $this->DetailTransaksiProdukModel->updateMultiple($data);
+        //}
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
     public function index_delete($id = null){
         if($id == null){
 			return $this->returnData('Parameter Id Tidak Ditemukan', true);
         }
         $response = $this->DetailTransaksiProdukModel->destroy($id);
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
+    public function deleteMultiple_post(){
+        $data = $this->post('id_detail_transaksi_produk');
+        //if($id == null){
+        $response = $this->DetailTransaksiProdukModel->deleteMultiple($data);
+        //}
         return $this->returnData($response['msg'], $response['error']);
     }
 

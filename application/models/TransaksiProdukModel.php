@@ -54,6 +54,33 @@ class TransaksiProdukModel extends CI_Model
         return ['msg'=>'Gagal','error'=>true];
     }
 
+    public function storeReturnObject($request) { 
+        $date_now = date('dmy');
+        $this->db->select_max('id_transaksi_produk');
+        $this->db->like('id_transaksi_produk', 'PR-'.$date_now, 'after');
+        $query = $this->db->get('transaksi_produk');
+        $lastdata = $query->row();
+        $last_id = $lastdata->id_transaksi_produk;
+        $last_count = substr($last_id, 10, 2);
+        $next_count = $last_count+1;
+        $next_id = 'PR-'.$date_now.'-'.sprintf('%02s', $next_count);
+
+        $this->id_transaksi_produk = $next_id;
+        $this->id_customer_service = $request->id_customer_service;
+        $this->id_hewan = $request->id_hewan;
+        $this->subtotal = $request->subtotal;
+        $this->diskon = $request->diskon;
+        $this->total = $request->total;
+        $this->status = 'Menunggu Pembayaran';
+        $this->created_by = $request->created_by;
+        if($this->db->insert($this->table, $this)){
+            //$temp = $this->updateTotal($next_id, $request->diskon);
+            $obj = $this->db->get_where('transaksi_produk', ["id_transaksi_produk" => $next_id])->row();
+            return ['msg'=>$obj,'error'=>false];
+        }
+        return ['msg'=>'Gagal','error'=>true];
+    }
+
     public function update($request, $id_transaksi_produk) {
         $updateData = [
             'id_hewan' => $request->id_hewan,

@@ -59,6 +59,38 @@ Class TransaksiProduk extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
+    public function insertAndGet_post(){
+        $validation = $this->form_validation;
+        $rule = $this->TransaksiProdukModel->rules();
+        array_push($rule,
+            [
+                'field' => 'id_customer_service',
+                'label' => 'id_customer_service',
+                'rules' => 'required'
+            ],
+            [
+                'field' => 'created_by',
+                'label' => 'created_by',
+                'rules' => 'required'
+            ]
+        );
+        $validation->set_rules($rule);
+		if (!$validation->run()) {
+			return $this->returnData($this->form_validation->error_array(), true);
+        }
+
+        $transaksi = new TransaksiProdukData();
+        $transaksi->id_customer_service = $this->post('id_customer_service');
+        $transaksi->id_hewan = $this->post('id_hewan');
+        $transaksi->subtotal = $this->post('subtotal');
+        $transaksi->diskon = $this->post('diskon');
+        $transaksi->total = $this->post('total');
+        $transaksi->created_by = $this->post('created_by');
+
+        $response = $this->TransaksiProdukModel->storeReturnObject($transaksi);
+        return $this->returnData($response['msg'], $response['error']);
+    }
+    
     public function update_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->TransaksiProdukModel->rules();
