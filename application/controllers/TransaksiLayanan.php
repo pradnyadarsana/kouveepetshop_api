@@ -23,6 +23,10 @@ Class TransaksiLayanan extends RestController{
         return $this->returnData($this->db->get_where('transaksi_layanan', ["progress" => 'Layanan Selesai'])->result(), false);
     }
 
+    public function progressDoneAndWaitingPayment_get(){
+        return $this->returnData($this->db->get_where('transaksi_layanan', ["progress" => 'Layanan Selesai', "status" => 'Menunggu Pembayaran'])->result(), false);
+    }
+
     public function waitingPayment_get(){
         return $this->returnData($this->db->get_where('transaksi_layanan', ["status" => 'Menunggu Pembayaran'])->result(), false);
     }
