@@ -137,9 +137,7 @@ class DetailTransaksiProdukModel extends CI_Model
                     'total' => $pricedata->total_harga-$transdata->diskon
                 ];
             }
-             
         }
-        
         $this->db->where('id_transaksi_produk',$id_transaksi_produk)->update('transaksi_produk', $updateData);
     }
     

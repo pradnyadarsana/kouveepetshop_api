@@ -63,9 +63,41 @@ Class TransaksiLayanan extends RestController{
         $transaksi->id_customer_service = $this->post('id_customer_service');
         $transaksi->id_hewan = $this->post('id_hewan');
         $transaksi->diskon = $this->post('diskon');
+        $transaksi->total = $this->post('total');
         $transaksi->created_by = $this->post('created_by');
 
         $response = $this->TransaksiLayananModel->store($transaksi);
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
+    public function insertAndGet_post(){
+        $validation = $this->form_validation;
+        $rule = $this->TransaksiLayananModel->rules();
+        array_push($rule,
+            [
+                'field' => 'id_customer_service',
+                'label' => 'id_customer_service',
+                'rules' => 'required'
+            ],
+            [
+                'field' => 'created_by',
+                'label' => 'created_by',
+                'rules' => 'required'
+            ]
+        );
+        $validation->set_rules($rule);
+		if (!$validation->run()) {
+			return $this->returnData($this->form_validation->error_array(), true);
+        }
+
+        $transaksi = new TransaksiLayananData();
+        $transaksi->id_customer_service = $this->post('id_customer_service');
+        $transaksi->id_hewan = $this->post('id_hewan');
+        $transaksi->diskon = $this->post('diskon');
+        $transaksi->total = $this->post('total');
+        $transaksi->created_by = $this->post('created_by');
+
+        $response = $this->TransaksiLayananModel->storeReturnObject($transaksi);
         return $this->returnData($response['msg'], $response['error']);
     }
 
@@ -86,7 +118,9 @@ Class TransaksiLayanan extends RestController{
 
         $transaksi = new TransaksiLayananData();
         $transaksi->id_hewan = $this->post('id_hewan');
+        $transaksi->subtotal = $this->post('subtotal');
         $transaksi->diskon = $this->post('diskon');
+        $transaksi->total = $this->post('total');
         $transaksi->modified_by = $this->post('modified_by');
         if($id == null){
             return $this->returnData('Parameter ID tidak ditemukan', true);

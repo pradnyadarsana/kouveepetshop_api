@@ -70,6 +70,14 @@ Class DetailTransaksiLayanan extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
+    public function insertMultiple_post(){
+        $data = $this->post('detail_transaksi_layanan');
+        //if($id == null){
+        $response = $this->DetailTransaksiLayananModel->storeMultiple($data);
+        //}
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
     public function update_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->DetailTransaksiLayananModel->rules();
@@ -107,11 +115,27 @@ Class DetailTransaksiLayanan extends RestController{
         return $this->returnData($response['msg'], $response['error']);
     }
 
+    public function updateMultiple_post(){
+        $data = $this->post('detail_transaksi_layanan');
+        //if($id == null){
+        $response = $this->DetailTransaksiLayananModel->updateMultiple($data);
+        //}
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
     public function index_delete($id = null){
         if($id == null){
 			return $this->returnData('Parameter Id Tidak Ditemukan', true);
         }
         $response = $this->DetailTransaksiLayananModel->destroy($id);
+        return $this->returnData($response['msg'], $response['error']);
+    }
+
+    public function deleteMultiple_post(){
+        $data = $this->post('id_detail_transaksi_layanan');
+        //if($id == null){
+        $response = $this->DetailTransaksiLayananModel->deleteMultiple($data);
+        //}
         return $this->returnData($response['msg'], $response['error']);
     }
 

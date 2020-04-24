@@ -52,7 +52,19 @@ class LayananModel extends CI_Model
             'delete_by' => $request->delete_by,
             'delete_at' => date('Y-m-d H:i:s')
         ];
-        if($this->db->where('id_layanan',$id_layanan)->update($this->table, $updateData)){
+        $this->db->trans_start();
+        $this->db->where('id_layanan',$id_layanan)->update($this->table, $updateData);
+        $this->db->where('id_layanan',$id_layanan)->update('harga_layanan', $updateData);
+        $this->db->trans_complete();
+        if ($this->db->trans_status() === FALSE) {
+            # Something went wrong.
+            $this->db->trans_rollback();
+            return ['msg'=>'Gagal','error'=>true];
+        } 
+        else {
+            # Everything is Perfect. 
+            # Committing data to the database.
+            $this->db->trans_commit();
             return ['msg'=>'Berhasil','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];

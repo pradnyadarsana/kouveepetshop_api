@@ -45,17 +45,16 @@ class DetailTransaksiLayananModel extends CI_Model
     public function storeMultiple($request) {
         $groomStat = false;
         $jsondata = json_decode($request);
-        $dataset = [];
+        $dataset = array();
         foreach($jsondata as $data){
-            array_push($dataset, 
-                [
+            $dataset[] = 
+                array(
                     'id_transaksi_layanan' => $data->id_transaksi_layanan,
                     'id_harga_layanan' => $data->id_harga_layanan,
                     'jumlah' => $data->jumlah,
                     'total_harga' => $data->total_harga,
                     'created_by' => $data->created_by,
-                ]
-            );
+                );
             if($this->groomingCheck($data->id_harga_layanan)){
                 $groomStat = true;
             }
@@ -63,9 +62,9 @@ class DetailTransaksiLayananModel extends CI_Model
         //echo count($dataset);
         if($this->db->insert_batch($this->table, $dataset)){
             if($groomStat){
-                $this->setProgress($dataset[0]->id_transaksi_layanan, 'Sedang Diproses');
+                $this->setProgress($dataset[0]["id_transaksi_layanan"], 'Sedang Diproses');
             }
-            updateTotal($data->id_transaksi_layanan);
+            $this->updateTotal($dataset[0]["id_transaksi_layanan"]);
             return ['msg'=>'Berhasil','error'=>false];
         }
         return ['msg'=>'Gagal','error'=>true];
@@ -106,6 +105,47 @@ class DetailTransaksiLayananModel extends CI_Model
         }
         return ['msg'=>'Gagal','error'=>true];
     }
+
+    public function updateMultiple($request) {
+        $groomStat = false;
+        $jsondata = json_decode($request);
+        //$id_transaksi_produk = 0;
+        $this->db->trans_start();
+        foreach($jsondata as $data){
+            $id_detail_transaksi_layanan = $data->id_detail_transaksi_layanan;
+            $id_transaksi_layanan = $data->id_transaksi_layanan;
+            $updateData = [
+                'id_harga_layanan' => $data->id_harga_layanan,
+                'jumlah' => $data->jumlah,
+                'total_harga' => $data->total_harga,
+                'modified_at' => date('Y-m-d H:i:s'),
+                'modified_by' => $data->modified_by
+            ];
+            if($this->groomingCheck($data->id_harga_layanan)){
+                $groomStat = true;
+            }
+            $this->db->where('id_detail_transaksi_layanan',$id_detail_transaksi_layanan)->update($this->table, $updateData);
+        }
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            # Something went wrong.
+            $this->db->trans_rollback();
+            $this->updateTotal($id_transaksi_layanan);
+            return ['msg'=>'Gagal','error'=>true];
+        } 
+        else {
+            # Everything is Perfect. 
+            # Committing data to the database.
+            $this->db->trans_commit();
+
+            if($groomStat){
+                $this->setProgress($jsondata[0]->id_transaksi_layanan, 'Sedang Diproses');
+            }
+            $this->updateTotal($id_transaksi_layanan);
+            return ['msg'=>'Berhasil','error'=>false];
+        }
+    }
     
     public function destroy($id){
         if (empty($this->db->select('*')->where(array('id_detail_transaksi_layanan' => $id))->get($this->table)->row())) 
@@ -137,6 +177,57 @@ class DetailTransaksiLayananModel extends CI_Model
             return ['msg'=>'Gagal','error'=>true];
         }
         return ['msg'=>'Id tidak ditemukan','error'=>true];
+    }
+
+    public function deleteMultiple($request){
+        $jsondata = json_decode($request);
+
+        $setProgress = true;
+        
+        $id_transaksi_layanan = 0;
+
+        $this->db->trans_start();
+
+        foreach($jsondata as $id){
+            $data = $this->db->get_where($this->table, array('id_detail_transaksi_layanan' => $id))->row();
+            $id_transaksi_layanan = $data->id_transaksi_layanan;
+            //$groomState = $this->groomingCheck($data->id_harga_layanan);
+
+            if($data!=null && $data->id_detail_transaksi_layanan==$id){
+                if($this->db->delete($this->table, array('id_detail_transaksi_layanan' => $id))){
+                }
+            }
+        }
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            # Something went wrong.
+            $this->db->trans_rollback();
+            $this->updateTotal($id_transaksi_layanan);
+            return ['msg'=>'Gagal','error'=>true];
+        } 
+        else {
+            # Everything is Perfect. 
+            # Committing data to the database.
+            $this->db->trans_commit();
+
+            //if($groomState){
+            $transdata = $this->db->get_where('detail_transaksi_layanan', ['id_transaksi_layanan'=>$id_transaksi_layanan])->result();
+            
+            foreach ($transdata as $temp) {
+                if($this->groomingCheck($temp->id_harga_layanan)){
+                    $setProgress = false;
+                }
+            }
+            //}
+            if($setProgress){
+                $this->setProgress($id_transaksi_layanan, 'Layanan Selesai');
+            }
+            $this->updateTotal($id_transaksi_layanan);
+            return ['msg'=>'Berhasil','error'=>false];
+        }
+        return ['msg'=>'Gagal','error'=>true];
     }
     
     public function updateTotal($id_transaksi_layanan) {
