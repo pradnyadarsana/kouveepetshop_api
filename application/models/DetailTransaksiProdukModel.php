@@ -31,6 +31,7 @@ class DetailTransaksiProdukModel extends CI_Model
         $this->total_harga = $request->total_harga;
         $this->created_by = $request->created_by;
         if($this->db->insert($this->table, $this)){
+            $this->kurangStokProduk($this->id_produk, $this->jumlah);
             $this->updateTotal($request->id_transaksi_produk);
             return ['msg'=>'Berhasil','error'=>false];
         }
@@ -54,6 +55,9 @@ class DetailTransaksiProdukModel extends CI_Model
         }
         //echo count($dataset);
         if($this->db->insert_batch($this->table, $dataset)){
+            foreach($jsondata as $data){
+                $this->kurangStokProduk($data->id_produk, $data->jumlah);
+            }
             $this->updateTotal($id_transaksi_produk);
             return ['msg'=>'Berhasil','error'=>false];
         }
@@ -70,7 +74,9 @@ class DetailTransaksiProdukModel extends CI_Model
             'modified_by' => $request->modified_by
         ];
         $data = $this->db->get_where($this->table, array('id_detail_transaksi_produk' => $id_detail_transaksi_produk))->row();
+        $new_sum_change = $request->jumlah-$data->jumlah;
         if($this->db->where('id_detail_transaksi_produk',$id_detail_transaksi_produk)->update($this->table, $updateData)){
+            $this->kurangStokProduk($data->id_produk, $new_sum_change);
             $this->updateTotal($data->id_transaksi_produk);
             return ['msg'=>'Berhasil','error'=>false];
         }
@@ -92,7 +98,10 @@ class DetailTransaksiProdukModel extends CI_Model
                 'modified_at' => date('Y-m-d H:i:s'),
                 'modified_by' => $data->modified_by
             ];
+            $data_before = $this->db->get_where($this->table, array('id_detail_transaksi_produk' => $id_detail_transaksi_produk))->row();
+            $new_sum_change = $data->jumlah-$data_before->jumlah;
             $this->db->where('id_detail_transaksi_produk',$id_detail_transaksi_produk)->update($this->table, $updateData);
+            $this->kurangStokProduk($data->id_produk, $new_sum_change);
         }
         $this->db->trans_complete();
 
@@ -148,6 +157,7 @@ class DetailTransaksiProdukModel extends CI_Model
         $data = $this->db->get_where($this->table, array('id_detail_transaksi_produk' => $id))->row();
         if($data!=null && $data->id_detail_transaksi_produk==$id){
             if($this->db->delete($this->table, array('id_detail_transaksi_produk' => $id))){
+                $this->tambahStokProduk($data->id_produk, $data->jumlah);
                 $this->updateTotal($data->id_transaksi_produk);
                 return ['msg'=>'Berhasil','error'=>false];
             }
@@ -164,12 +174,38 @@ class DetailTransaksiProdukModel extends CI_Model
         $data_transaksi = $this->db->get_where($this->table, array('id_detail_transaksi_produk' => $jsondata[0]))->row();
         $id_transaksi_produk = $data_transaksi->id_transaksi_produk;
 
+        $this->db->select('*');
+        $this->db->from('detail_transaksi_produk');
+        $this->db->where_in('id_detail_transaksi_produk', $jsondata);
+        $result = $this->db->get()->result();
         if($this->db->where_in('id_detail_transaksi_produk', $jsondata)->delete($this->table)){
+            //add jumlah produk
+            foreach($result as $trans){
+                $this->tambahStokProduk($trans->id_produk, $trans->jumlah);
+            }
             $this->updateTotal($id_transaksi_produk);
             return ['msg'=>'Berhasil','error'=>false];
         } 
         $this->updateTotal($id_transaksi_produk);
         return ['msg'=>'Gagal','error'=>true];
+    }
+    
+    public function kurangStokProduk($id_produk, $qty){
+        $data = $this->db->get_where('produk', array('id_produk' => $id_produk))->row();
+        $new_sum = $data->jumlah_stok-$qty;
+        $updateData = [
+            'jumlah_stok' => $new_sum
+        ];
+        $this->db->where('id_produk',$data->id_produk)->update('produk', $updateData);
+    }
+
+    public function tambahStokProduk($id_produk, $qty){
+        $data = $this->db->get_where('produk', array('id_produk' => $id_produk))->row();
+        $new_sum = $data->jumlah_stok+$qty;
+        $updateData = [
+            'jumlah_stok' => $new_sum
+        ];
+        $this->db->where('id_produk',$data->id_produk)->update('produk', $updateData);
     }
 }
 ?>

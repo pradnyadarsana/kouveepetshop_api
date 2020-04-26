@@ -155,8 +155,12 @@ class TransaksiProdukModel extends CI_Model
             return ['msg'=>'Id tidak ditemukan','error'=>true];
         
         $data = $this->db->get_where($this->table, array('id_transaksi_produk' => $id))->row();
+        $detail = $this->db->get_where('detail_transaksi_produk', array('id_transaksi_produk' => $id))->result();
         if($data!=null && $data->id_transaksi_produk==$id){
             $this->db->trans_start();
+            foreach($detail as $item){
+                $this->tambahStokProduk($item->id_produk, $item->jumlah);
+            }
             $this->db->delete('detail_transaksi_produk', ['id_transaksi_produk' => $id]);
             $this->db->delete($this->table, ['id_transaksi_produk' => $id]);
             $this->db->trans_complete();
@@ -175,6 +179,24 @@ class TransaksiProdukModel extends CI_Model
             
         }
         return ['msg'=>'Id tidak ditemukan','error'=>true];
+    }
+
+    public function kurangStokProduk($id_produk, $qty){
+        $data = $this->db->get_where('produk', array('id_produk' => $id_produk))->row();
+        $new_sum = $data->jumlah_stok-$qty;
+        $updateData = [
+            'jumlah_stok' => $new_sum
+        ];
+        $this->db->where('id_produk',$data->id_produk)->update('produk', $updateData);
+    }
+
+    public function tambahStokProduk($id_produk, $qty){
+        $data = $this->db->get_where('produk', array('id_produk' => $id_produk))->row();
+        $new_sum = $data->jumlah_stok+$qty;
+        $updateData = [
+            'jumlah_stok' => $new_sum
+        ];
+        $this->db->where('id_produk',$data->id_produk)->update('produk', $updateData);
     }
 }
 ?>
