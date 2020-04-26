@@ -103,6 +103,8 @@ class TransaksiLayananModel extends CI_Model
     }
 
     public function updateProgress($request, $id_transaksi_layanan) {
+        $messageStat = false;
+        
         $updateData = [
             'progress' => 'Layanan Selesai',
             'modified_at' => date('Y-m-d H:i:s'),
@@ -110,8 +112,79 @@ class TransaksiLayananModel extends CI_Model
         ];
         $data = $this->db->get_where('transaksi_layanan',['id_transaksi_layanan'=>$id_transaksi_layanan, 'status'=> 'Menunggu Pembayaran'])->row();
         if($data){
-            $this->db->where(['id_transaksi_layanan'=>$id_transaksi_layanan, 'status'=> 'Menunggu Pembayaran'])->update($this->table, $updateData);
-            return ['msg'=>'Berhasil','error'=>false];
+            $this->db->trans_start();
+            $this->db->where(['id_transaksi_layanan'=>$id_transaksi_layanan, 'status'=> 'Menunggu Pembayaran'])->update($this->table, $updateData);            $this->db->select('id_hewan, hewan.id_pelanggan, pelanggan.nama "nama_pelanggan", pelanggan.alamat "alamat_pelanggan", 
+                        pelanggan.tanggal_lahir "tanggal_lahir_pelanggan", pelanggan.telp "telp_pelanggan",
+                        hewan.id_jenis_hewan, jenis_hewan.nama "nama_jenis_hewan", hewan.nama "nama_hewan", hewan.tanggal_lahir "tanggal_lahir_hewan", 
+                        hewan.created_at, hewan.created_by, hewan.modified_at, hewan.modified_by, hewan.delete_at, hewan.delete_by, hewan.aktif');
+            $this->db->from('hewan');
+            $this->db->join('pelanggan', 'hewan.id_pelanggan = pelanggan.id_pelanggan');
+            $this->db->join('jenis_hewan', 'hewan.id_jenis_hewan = jenis_hewan.id_jenis_hewan');
+            $this->db->where('id_hewan',$id_hewan);
+            $hewan = $this->db->get()->row();
+
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE) {
+                # Something went wrong.
+                $this->db->trans_rollback();
+                return ['msg'=>'Gagal','error'=>true];
+            } 
+            else {
+                # Everything is Perfect. 
+                # Committing data to the database.
+                // $telp = '';
+                // if(substr($hewan->telp_pelanggan,0,3)=='+62'){
+                //     $telp = $hewan->telp_pelanggan;
+                // }else{
+                //     $number = substr($hewan->telp_pelanggan,1,strlen($hewan->telp_pelanggan));
+                //     $telp = '+62'.$number;
+                // }
+
+                // $fields_string  =   "";
+                // $fields = array(
+                //             'api_key'       =>  'a0c91022',
+                //             'api_secret'    =>  'qCSO83HdmC87Pv3P',
+                //             'to'            =>  $telp,
+                //             'from'          =>  "Kouvee Pet Shop",
+                //             'text'          =>  'Halo '.$hewan->nama_pelanggan.', layanan untuk peliharaan anda sudah selesai dikerjakan, mohon selesaikan pembayaran di Kouvee Pet Shop. Thanks.'
+                //             );
+                // $url    =   "https://rest.nexmo.com/sms/json";
+
+                // //url-ify the data for the POST
+                // foreach($fields as $key=>$value) { 
+                //         $fields_string .= $key.'='.$value.'&'; 
+                //         }
+                // rtrim($fields_string, '&');
+
+                // //open connection
+                // $ch = curl_init();
+
+                // //set the url, number of POST vars, POST data
+                // curl_setopt($ch,CURLOPT_URL, $url);
+                // curl_setopt($ch,CURLOPT_POST, count($fields));
+                // curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+                // curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+
+                // //execute post
+                // $curl_res = curl_exec($ch);
+                // //close connection
+                // curl_close($ch);
+
+                // $result = json_decode($curl_res);
+
+                // if($result->messages[0]->status == 0) {
+                //     $messageStat = true;
+                // } else {
+                //     $messageStat = false;
+                // }
+                // if($messageStat){
+                    $this->db->trans_commit();
+                    return ['msg'=>'Berhasil','error'=>false];
+                // }
+                // $this->db->trans_rollback();
+                // return ['msg'=>'Gagal','error'=>true];
+            }
         }
         return ['msg'=>'Gagal','error'=>true];
     }
