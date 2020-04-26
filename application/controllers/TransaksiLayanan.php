@@ -11,6 +11,18 @@ Class TransaksiLayanan extends RestController{
         $this->load->library('form_validation');
     }
 
+    public function getWithJoin_get() {
+        $this->db->select('id_transaksi_layanan, transaksi_layanan.id_hewan, hewan.nama "nama_hewan",  hewan.id_pelanggan, pelanggan.nama "nama_pelanggan",
+                        transaksi_layanan.subtotal, transaksi_layanan.diskon, transaksi_layanan.total, transaksi_layanan.progress, transaksi_layanan.status,
+                        transaksi_layanan.tanggal_lunas, transaksi_layanan.created_at, transaksi_layanan.created_by,
+                        transaksi_layanan.modified_at, transaksi_layanan.modified_by');
+        $this->db->from('transaksi_layanan');
+        $this->db->join('hewan', 'transaksi_layanan.id_hewan = hewan.id_hewan');
+        $this->db->join('pelanggan', 'hewan.id_pelanggan = pelanggan.id_pelanggan');
+        $this->db->order_by('transaksi_layanan.id_transaksi_layanan ASC');
+        return $this->returnData($this->db->get()->result(), false);
+    }
+
     public function index_get(){
         return $this->returnData($this->db->get('transaksi_layanan')->result(), false);
     }
