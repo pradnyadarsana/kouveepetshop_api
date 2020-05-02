@@ -12,13 +12,14 @@ Class TransaksiLayanan extends RestController{
     }
 
     public function getWithJoin_get() {
-        $this->db->select('id_transaksi_layanan, transaksi_layanan.id_hewan, hewan.nama "nama_hewan",  hewan.id_pelanggan, pelanggan.nama "nama_pelanggan",
+        $this->db->select('id_transaksi_layanan, transaksi_layanan.id_hewan, hewan.nama "nama_hewan", hewan.id_jenis_hewan, jenis_hewan.nama "jenis_hewan", hewan.id_pelanggan, pelanggan.nama "nama_pelanggan", pelanggan.telp "telp",
                         transaksi_layanan.subtotal, transaksi_layanan.diskon, transaksi_layanan.total, transaksi_layanan.progress, transaksi_layanan.status,
                         transaksi_layanan.tanggal_lunas, transaksi_layanan.created_at, transaksi_layanan.created_by,
                         transaksi_layanan.modified_at, transaksi_layanan.modified_by');
         $this->db->from('transaksi_layanan');
-        $this->db->join('hewan', 'transaksi_layanan.id_hewan = hewan.id_hewan');
-        $this->db->join('pelanggan', 'hewan.id_pelanggan = pelanggan.id_pelanggan');
+        $this->db->join('hewan', 'transaksi_layanan.id_hewan = hewan.id_hewan', 'left outer');
+        $this->db->join('jenis_hewan', 'hewan.id_jenis_hewan = jenis_hewan.id_jenis_hewan', 'left');
+        $this->db->join('pelanggan', 'hewan.id_pelanggan = pelanggan.id_pelanggan', 'left');
         $this->db->order_by('transaksi_layanan.id_transaksi_layanan ASC');
         return $this->returnData($this->db->get()->result(), false);
     }
