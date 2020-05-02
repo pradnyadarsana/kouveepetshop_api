@@ -1,5 +1,5 @@
 <?php
-Class CetakStrukProduk extends CI_Controller{
+Class CetakStrukProdukGuest extends CI_Controller{
     
     function __construct() {
         parent::__construct();
@@ -72,12 +72,8 @@ Class CetakStrukProduk extends CI_Controller{
         $pdf->Cell(45,6,':  '.$nama_kasir,0,1);
         $pdf->Cell(45,6,'Customer Service ',0,0);
         $pdf->Cell(45,6,':  '.$nama_customer_service,0,1);
-        $pdf->Cell(45,6,'Member  ',0,0);
-        $pdf->Cell(45,6,':  '.$nama_pelanggan,0,1);
-        $pdf->Cell(45,6,'Telp  ',0,0);
-        $pdf->Cell(45,6,':  '.$no_telp,0,1);
-        $pdf->Cell(45,6,'Nama Hewan  ',0,0);
-        $pdf->Cell(45,6,':  '.$nama_hewan.'-'.'('.$nama_jenis_hewan.')',0,1);
+        $pdf->Cell(45,6,'Pelanggan  ',0,0);
+        $pdf->Cell(45,6,':  Guest',0,1);
         // $pdf->Cell(30,6,$alamat_supplier,0,1);
         // $pdf->Cell(30,6,$no_telp,0,1);
         $pdf->Cell(10,10,'',0,1);

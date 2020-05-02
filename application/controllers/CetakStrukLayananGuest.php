@@ -1,5 +1,5 @@
 <?php
-Class CetakStrukProduk extends CI_Controller{
+Class CetakStrukLayanan extends CI_Controller{
     
     function __construct() {
         parent::__construct();
@@ -17,8 +17,8 @@ Class CetakStrukProduk extends CI_Controller{
         // membuat halaman baru
         $pdf->AddPage();
     
-        $dataDetailTransaksi = $this->db->get_where('detail_transaksi_produk', ["id_transaksi_produk" => $param])->result();
-        $dataTransaksi= $this->db->get_where('transaksi_produk', ["id_transaksi_produk" => $param])->row();
+        $dataDetailTransaksi = $this->db->get_where('detail_transaksi_layanan', ["id_transaksi_layanan" => $param])->result();
+        $dataTransaksi= $this->db->get_where('transaksi_layanan', ["id_transaksi_layanan" => $param])->row();
         $id_kasir = $dataTransaksi->id_kasir;
         $id_customer_service = $dataTransaksi->id_customer_service;
         $id_hewan = $dataTransaksi->id_hewan;
@@ -30,10 +30,10 @@ Class CetakStrukProduk extends CI_Controller{
         $tgl = $dataTransaksi->created_at;
         $pelanggan = $this->db->get_where('pelanggan', ["id_pelanggan" => $id_pelanggan])->row();
         $jenis_hewan = $this->db->get_where('jenis_hewan', ["id_jenis_hewan" => $id_jenis_hewan])->row();
-
-
+        
+       
         $subtotal = $dataTransaksi->subtotal;
-        $id_transaksi = $dataTransaksi->id_transaksi_produk;
+        $id_transaksi = $dataTransaksi->id_transaksi_layanan;
         $diskon = $dataTransaksi->diskon;
         $total = $dataTransaksi->total;
         $tanggal_lunas = $dataTransaksi->tanggal_lunas;
@@ -72,48 +72,55 @@ Class CetakStrukProduk extends CI_Controller{
         $pdf->Cell(45,6,':  '.$nama_kasir,0,1);
         $pdf->Cell(45,6,'Customer Service ',0,0);
         $pdf->Cell(45,6,':  '.$nama_customer_service,0,1);
-        $pdf->Cell(45,6,'Member  ',0,0);
-        $pdf->Cell(45,6,':  '.$nama_pelanggan,0,1);
-        $pdf->Cell(45,6,'Telp  ',0,0);
-        $pdf->Cell(45,6,':  '.$no_telp,0,1);
-        $pdf->Cell(45,6,'Nama Hewan  ',0,0);
-        $pdf->Cell(45,6,':  '.$nama_hewan.'-'.'('.$nama_jenis_hewan.')',0,1);
+        $pdf->Cell(45,6,'Pelanggan  ',0,0);
+        $pdf->Cell(45,6,':  Guest',0,1);
         // $pdf->Cell(30,6,$alamat_supplier,0,1);
         // $pdf->Cell(30,6,$no_telp,0,1);
         $pdf->Cell(10,10,'',0,1);
         $pdf->Cell(70);
         $pdf->SetFont('Arial','B',14);
-        $pdf->Cell(50,7,'Pembelian Produk',0,1,'C');
+        $pdf->Cell(50,7,'Jasa Layanan',0,1,'C');
         $pdf->Cell(180,7,'_________________________________________________________________',0,1,'C');
     
       
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(10,10,'',0,1);
-        $pdf->Cell(45,6,'NAMA PRODUK',1,0,'C');
-        $pdf->Cell(45,6,'HARGA',1,0,'C');
-        $pdf->Cell(45,6,'JUMLAH',1,0,'C');
-        $pdf->Cell(45,6,'TOTAL',1,1,'C');
+        $pdf->Cell(45,6,'NAMA LAYANAN',1,0,'C');
+        $pdf->Cell(35,6,'HARGA',1,0,'C');
+        $pdf->Cell(20,6,'JUMLAH',1,0,'C');
+        $pdf->Cell(35,6,'UKURAN',1,0,'C');
+        $pdf->Cell(35,6,'TOTAL',1,1,'C');
         $pdf->SetFont('Arial','',10);
         $i = 1;
    
-               
+     
                 foreach ($dataDetailTransaksi as $loop){
-                    if($loop->id_transaksi_produk == $dataTransaksi->id_transaksi_produk)
+                    if($loop->id_transaksi_layanan == $dataTransaksi->id_transaksi_layanan)
                     {
-                     
-                        $id_produk = $loop->id_produk;
-                        $produk = $this->db->get_where('produk', ["id_produk" => $id_produk])->row();
-                        $pdf->Cell(45,10,$produk->nama,1,0,'L');
-                        $pdf->Cell(45,10,'Rp '.$produk->harga,1,0,'C');
-                        $pdf->Cell(45,10,$loop->jumlah,1,0,'C');
-                        $pdf->Cell(45,10,'Rp '.$loop->total_harga,1,1,'C');
+
+                        $id_harga_layanan = $loop->id_harga_layanan;
+                        $harga_layanan = $this->db->get_where('harga_layanan', ["id_harga_layanan" => $id_harga_layanan])->row();
+                        $harga = $harga_layanan->harga;
+                        $id_layanan = $harga_layanan->id_layanan;
+                        $layanan = $this->db->get_where('layanan', ["id_layanan" => $id_layanan])->row();
+                        $nama_layanan = $layanan->nama;
+                        $id_ukuran_hewan = $harga_layanan->id_ukuran_hewan;
+                        $ukuran = $this->db->get_where('ukuran_hewan', ["id_ukuran_hewan" => $id_ukuran_hewan])->row();
+                        $nama_ukuran = $ukuran->nama;       
+                      
+                       
+                        $pdf->Cell(45,10,$layanan->nama,1,0,'C');
+                        $pdf->Cell(35,10,'Rp '.$harga_layanan->harga,1,0,'C');
+                        $pdf->Cell(20,10,$loop->jumlah,1,0,'C');
+                        $pdf->Cell(35,10,$ukuran->nama,1,0,'C');
+                        $pdf->Cell(35,10,'Rp '.$loop->total_harga,1,1,'C');
                     } 
                 }
                 $pdf->Cell(10,10,'',0,1);
                 $pdf->Cell(45,6,'Sub Total :Rp   '.$subtotal,0,1);
                 $pdf->Cell(45,6,'Diskon     :Rp   '.$diskon,0,1);
                 $pdf->SetFont('Arial','B',16);
-                $pdf->Cell(65,10,'Total :Rp '.$total,1,1);
+                $pdf->Cell(60,10,'Total       :Rp '.$total,1,1);
            
         date_default_timezone_set('Asia/Jakarta');
         $now = date("d-m-Y");
@@ -121,7 +128,7 @@ Class CetakStrukProduk extends CI_Controller{
         $pdf->Cell(135);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(30,7,'Dicetak tanggal '.$nowDate.' '.$month_name[intval($nowMonth)-1].' '.$nowYear,0,1,'C');
-        $pdf->Output('Struk_Produk_Kouvee_.pdf','I');
+        $pdf->Output('Struk_Layanan_Kouvee_.pdf','I');
         //.$param
     }
 }

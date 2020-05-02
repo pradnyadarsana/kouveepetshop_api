@@ -30,14 +30,14 @@ Class CetakStrukLayanan extends CI_Controller{
         $tgl = $dataTransaksi->created_at;
         $pelanggan = $this->db->get_where('pelanggan', ["id_pelanggan" => $id_pelanggan])->row();
         $jenis_hewan = $this->db->get_where('jenis_hewan', ["id_jenis_hewan" => $id_jenis_hewan])->row();
-
-
+        
+       
         $subtotal = $dataTransaksi->subtotal;
         $id_transaksi = $dataTransaksi->id_transaksi_layanan;
         $diskon = $dataTransaksi->diskon;
         $total = $dataTransaksi->total;
         $tanggal_lunas = $dataTransaksi->tanggal_lunas;
-        // $nama_kasir = $kasir->nama;
+        $nama_kasir = $kasir->nama;
         $nama_customer_service = $customer_service->nama;
         $nama_pelanggan = $pelanggan->nama;
         $no_telp = $pelanggan->telp;
@@ -69,7 +69,7 @@ Class CetakStrukLayanan extends CI_Controller{
         $pdf->SetFont('Arial','',10);
         $pdf->Cell(10,10,'',0,1);
         $pdf->Cell(45,6,'Kasir  ',0,0);
-        // $pdf->Cell(45,6,':  '.$nama_kasir,0,1);
+        $pdf->Cell(45,6,':  '.$nama_kasir,0,1);
         $pdf->Cell(45,6,'Customer Service ',0,0);
         $pdf->Cell(45,6,':  '.$nama_customer_service,0,1);
         $pdf->Cell(45,6,'Member  ',0,0);
@@ -90,30 +90,41 @@ Class CetakStrukLayanan extends CI_Controller{
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(10,10,'',0,1);
         $pdf->Cell(45,6,'NAMA LAYANAN',1,0,'C');
-        $pdf->Cell(45,6,'HARGA',1,0,'C');
-        $pdf->Cell(45,6,'JUMLAH',1,0,'C');
-        $pdf->Cell(45,6,'TOTAL',1,1,'C');
+        $pdf->Cell(35,6,'HARGA',1,0,'C');
+        $pdf->Cell(20,6,'JUMLAH',1,0,'C');
+        $pdf->Cell(35,6,'UKURAN',1,0,'C');
+        $pdf->Cell(35,6,'TOTAL',1,1,'C');
         $pdf->SetFont('Arial','',10);
         $i = 1;
    
-               
+     
                 foreach ($dataDetailTransaksi as $loop){
                     if($loop->id_transaksi_layanan == $dataTransaksi->id_transaksi_layanan)
                     {
-                     
-                        $id_layanan = $loop->id_layanan;
-                        $produk = $this->db->get_where('layanan', ["id_layanan" => $id_layanan])->row();
-                        $pdf->Cell(45,10,$produk->nama,1,0,'L');
-                        $pdf->Cell(45,10,$produk->harga,1,0,'C');
-                        $pdf->Cell(45,10,$loop->jumlah,1,0,'C');
-                        $pdf->Cell(45,10,$loop->total_harga,1,1,'C');
+
+                        $id_harga_layanan = $loop->id_harga_layanan;
+                        $harga_layanan = $this->db->get_where('harga_layanan', ["id_harga_layanan" => $id_harga_layanan])->row();
+                        $harga = $harga_layanan->harga;
+                        $id_layanan = $harga_layanan->id_layanan;
+                        $layanan = $this->db->get_where('layanan', ["id_layanan" => $id_layanan])->row();
+                        $nama_layanan = $layanan->nama;
+                        $id_ukuran_hewan = $harga_layanan->id_ukuran_hewan;
+                        $ukuran = $this->db->get_where('ukuran_hewan', ["id_ukuran_hewan" => $id_ukuran_hewan])->row();
+                        $nama_ukuran = $ukuran->nama;       
+                      
+                       
+                        $pdf->Cell(45,10,$layanan->nama,1,0,'C');
+                        $pdf->Cell(35,10,'Rp '.$harga_layanan->harga,1,0,'C');
+                        $pdf->Cell(20,10,$loop->jumlah,1,0,'C');
+                        $pdf->Cell(35,10,$ukuran->nama,1,0,'C');
+                        $pdf->Cell(35,10,'Rp '.$loop->total_harga,1,1,'C');
                     } 
                 }
                 $pdf->Cell(10,10,'',0,1);
-                $pdf->Cell(45,6,'Sub Total :Rp.   '.$subtotal,0,1);
-                $pdf->Cell(45,6,'Diskon     :Rp.   '.$diskon,0,1);
+                $pdf->Cell(45,6,'Sub Total :Rp   '.$subtotal,0,1);
+                $pdf->Cell(45,6,'Diskon     :Rp   '.$diskon,0,1);
                 $pdf->SetFont('Arial','B',16);
-                $pdf->Cell(65,10,'Total       :Rp.   '.$total,1,1);
+                $pdf->Cell(60,10,'Total       :Rp '.$total,1,1);
            
         date_default_timezone_set('Asia/Jakarta');
         $now = date("d-m-Y");
@@ -121,7 +132,7 @@ Class CetakStrukLayanan extends CI_Controller{
         $pdf->Cell(135);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(30,7,'Dicetak tanggal '.$nowDate.' '.$month_name[intval($nowMonth)-1].' '.$nowYear,0,1,'C');
-        $pdf->Output('Struk_Produk_Kouvee_.pdf','I');
+        $pdf->Output('Struk_Layanan_Kouvee_.pdf','I');
         //.$param
     }
 }
