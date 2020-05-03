@@ -50,7 +50,7 @@ class ProdukModel extends CI_Model
             $image = $this->uploadImage();
         } else {
             $old_data = $this->db->get_where('produk', ["id_produk" => $id_produk])->row();
-            $image = $old_data->GAMBAR;
+            $image = $old_data->gambar;
         }
         $updateData = [
             'nama' => $request->nama,
