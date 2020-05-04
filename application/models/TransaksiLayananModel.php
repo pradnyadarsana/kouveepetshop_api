@@ -120,8 +120,12 @@ class TransaksiLayananModel extends CI_Model
             $this->db->from('hewan');
             $this->db->join('pelanggan', 'hewan.id_pelanggan = pelanggan.id_pelanggan');
             $this->db->join('jenis_hewan', 'hewan.id_jenis_hewan = jenis_hewan.id_jenis_hewan');
-            $this->db->where('id_hewan',$id_hewan);
-            $hewan = $this->db->get()->row();
+            $this->db->where('id_hewan',$data->id_hewan);
+            $query = $this->db->get();
+            $hewan = null;
+            if($query->num_rows()!=0){
+                $hewan = $query->row();
+            }
 
             $this->db->trans_complete();
 
@@ -133,57 +137,61 @@ class TransaksiLayananModel extends CI_Model
             else {
                 # Everything is Perfect. 
                 # Committing data to the database.
-                // $telp = '';
-                // if(substr($hewan->telp_pelanggan,0,3)=='+62'){
-                //     $telp = $hewan->telp_pelanggan;
-                // }else{
-                //     $number = substr($hewan->telp_pelanggan,1,strlen($hewan->telp_pelanggan));
-                //     $telp = '+62'.$number;
+                // if($hewan!=null){
+                //     $telp = '';
+                //     if(substr($hewan->telp_pelanggan,0,3)=='+62'){
+                //         $telp = $hewan->telp_pelanggan;
+                //     }else{
+                //         $number = substr($hewan->telp_pelanggan,1,strlen($hewan->telp_pelanggan));
+                //         $telp = '+62'.$number;
+                //     }
+
+                //     $fields_string  =   "";
+                //     $fields = array(
+                //                 'api_key'       =>  'a0c91022',
+                //                 'api_secret'    =>  'qCSO83HdmC87Pv3P',
+                //                 'to'            =>  $telp,
+                //                 'from'          =>  "Kouvee Pet Shop",
+                //                 'text'          =>  'Halo '.$hewan->nama_pelanggan.', layanan untuk peliharaan anda sudah selesai dikerjakan, mohon selesaikan pembayaran di Kouvee Pet Shop. Thanks.'
+                //                 );
+                //     $url    =   "https://rest.nexmo.com/sms/json";
+
+                //     //url-ify the data for the POST
+                //     foreach($fields as $key=>$value) { 
+                //             $fields_string .= $key.'='.$value.'&'; 
+                //             }
+                //     rtrim($fields_string, '&');
+
+                //     //open connection
+                //     $ch = curl_init();
+
+                //     //set the url, number of POST vars, POST data
+                //     curl_setopt($ch,CURLOPT_URL, $url);
+                //     curl_setopt($ch,CURLOPT_POST, count($fields));
+                //     curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+                //     curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+
+                //     //execute post
+                //     $curl_res = curl_exec($ch);
+                //     //close connection
+                //     curl_close($ch);
+
+                //     $result = json_decode($curl_res);
+
+                //     if($result->messages[0]->status == 0) {
+                //         $messageStat = true;
+                //     } else {
+                //         $messageStat = false;
+                //     }
+                //     if($messageStat){
+                //         $this->db->trans_commit();
+                //         return ['msg'=>'Berhasil','error'=>false];
+                //     }
+                //     $this->db->trans_rollback();
+                //     return ['msg'=>'Gagal','error'=>true];
                 // }
-
-                // $fields_string  =   "";
-                // $fields = array(
-                //             'api_key'       =>  'a0c91022',
-                //             'api_secret'    =>  'qCSO83HdmC87Pv3P',
-                //             'to'            =>  $telp,
-                //             'from'          =>  "Kouvee Pet Shop",
-                //             'text'          =>  'Halo '.$hewan->nama_pelanggan.', layanan untuk peliharaan anda sudah selesai dikerjakan, mohon selesaikan pembayaran di Kouvee Pet Shop. Thanks.'
-                //             );
-                // $url    =   "https://rest.nexmo.com/sms/json";
-
-                // //url-ify the data for the POST
-                // foreach($fields as $key=>$value) { 
-                //         $fields_string .= $key.'='.$value.'&'; 
-                //         }
-                // rtrim($fields_string, '&');
-
-                // //open connection
-                // $ch = curl_init();
-
-                // //set the url, number of POST vars, POST data
-                // curl_setopt($ch,CURLOPT_URL, $url);
-                // curl_setopt($ch,CURLOPT_POST, count($fields));
-                // curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-                // curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-
-                // //execute post
-                // $curl_res = curl_exec($ch);
-                // //close connection
-                // curl_close($ch);
-
-                // $result = json_decode($curl_res);
-
-                // if($result->messages[0]->status == 0) {
-                //     $messageStat = true;
-                // } else {
-                //     $messageStat = false;
-                // }
-                // if($messageStat){
-                    $this->db->trans_commit();
-                    return ['msg'=>'Berhasil','error'=>false];
-                // }
-                // $this->db->trans_rollback();
-                // return ['msg'=>'Gagal','error'=>true];
+                $this->db->trans_commit();
+                return ['msg'=>'Berhasil','error'=>false];
             }
         }
         return ['msg'=>'Gagal','error'=>true];
