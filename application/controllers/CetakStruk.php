@@ -12,9 +12,6 @@ Class CetakStruk extends RestController{
         $this->load->library('pdf');
         include_once APPPATH . '/third_party/fpdf/fpdf.php';
     }
-    // function _remap($param) {
-    //     $this->index($param);
-    // }
     
     function transaksiLayanan_get($param){
         // $this->load->helper('directory'); //load directory helper

@@ -11,19 +11,6 @@ Class DetailPengadaan extends RestController{
         $this->load->library('form_validation');
     }
 
-    // public function getWithJoin_get() {
-    //     $this->db->select('id_detail_transaksi_produk, detail_transaksi_produk.id_transaksi_produk,
-    //                     detail_transaksi_produk.id_harga_produk, harga_produk.id_produk, harga_produk.id_ukuran_hewan,
-    //                     produk.nama "nama_produk", ukuran_hewan.nama "ukuran_hewan", harga_produk.harga, detail_transaksi_produk.jumlah,
-    //                     detail_transaksi_produk.total_harga, detail_transaksi_produk.created_at, detail_transaksi_produk.created_by,
-    //                     detail_transaksi_produk.modified_at, detail_transaksi_produk.modified_by');
-    //     $this->db->from('detail_transaksi_produk');
-    //     $this->db->join('harga_produk', 'detail_transaksi_produk.id_harga_produk = harga_produk.id_harga_produk');
-    //     $this->db->join('produk', 'harga_produk.id_produk = produk.id_produk');
-    //     $this->db->join('ukuran_hewan', 'harga_produk.id_ukuran_hewan = ukuran_hewan.id_ukuran_hewan');
-    //     $this->db->order_by('detail_transaksi_produk.id_detail_transaksi_produk ASC');
-    //     return $this->returnData($this->db->get()->result(), false);
-    // }
     public function getWithJoin_get() {
         $this->db->select('detail_pengadaan.id_detail_pengadaan,detail_pengadaan.id_pengadaan_produk,detail_pengadaan.jumlah,detail_pengadaan.harga, detail_pengadaan.total_harga, detail_pengadaan.created_by, detail_pengadaan.modified_by,
                         detail_pengadaan.created_at, detail_pengadaan.modified_at, produk.nama "nama_produk"');
