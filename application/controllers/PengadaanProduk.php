@@ -24,6 +24,14 @@ Class PengadaanProduk extends RestController{
     //     $this->db->order_by('transaksi_produk.id_transaksi_produk ASC');
     //     return $this->returnData($this->db->get()->result(), false);
     // }
+    public function getWithJoin_get() {
+        $this->db->select('pengadaan_produk.id_pengadaan_produk, pengadaan_produk.total,pengadaan_produk.status, pengadaan_produk.created_by, pengadaan_produk.modified_by,
+                        pengadaan_produk.created_at, pengadaan_produk.modified_at, supplier.nama "nama_supplier"');
+        $this->db->from('pengadaan_produk');
+        $this->db->join('supplier', 'pengadaan_produk.id_supplier = supplier.id_supplier');
+        $this->db->order_by('pengadaan_produk.id_pengadaan_produk ASC');
+        return $this->returnData($this->db->get()->result(), false);
+    }
 
     public function index_get(){
         return $this->returnData($this->db->get('pengadaan_produk')->result(), false);
