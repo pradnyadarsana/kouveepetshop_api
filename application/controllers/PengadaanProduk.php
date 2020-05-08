@@ -285,7 +285,7 @@ Class PengadaanProduk extends RestController{
         $pdf->Cell(10,20,'',0,1);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(190,7,'Dicetak tanggal '.$tanggal_cetak,0,1,'R');
-        $pdf->Output($pengadaan_produk_data->id_pengadaan_produk.'.pdf','I');
+        $pdf->Output($pengadaan_produk_data->id_pengadaan_produk.'.pdf','D');
     }
 }
 
