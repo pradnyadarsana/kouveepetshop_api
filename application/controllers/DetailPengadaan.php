@@ -12,7 +12,7 @@ Class DetailPengadaan extends RestController{
     }
 
     public function getWithJoin_get() {
-        $this->db->select('detail_pengadaan.id_detail_pengadaan,detail_pengadaan.id_pengadaan_produk,detail_pengadaan.jumlah,detail_pengadaan.harga, detail_pengadaan.total_harga, detail_pengadaan.created_by, detail_pengadaan.modified_by,
+        $this->db->select('detail_pengadaan.id_detail_pengadaan,detail_pengadaan.id_produk,detail_pengadaan.id_pengadaan_produk,detail_pengadaan.jumlah,detail_pengadaan.harga, detail_pengadaan.total_harga, detail_pengadaan.created_by, detail_pengadaan.modified_by,
                         detail_pengadaan.created_at, detail_pengadaan.modified_at, produk.nama "nama_produk"');
         $this->db->from('detail_pengadaan');
         $this->db->join('produk', 'detail_pengadaan.id_produk = produk.id_produk');

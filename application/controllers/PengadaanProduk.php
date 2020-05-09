@@ -14,7 +14,7 @@ Class PengadaanProduk extends RestController{
     }
 
     public function getWithJoin_get() {
-        $this->db->select('pengadaan_produk.id_pengadaan_produk, pengadaan_produk.total,pengadaan_produk.status, pengadaan_produk.created_by, pengadaan_produk.modified_by,
+        $this->db->select('pengadaan_produk.id_pengadaan_produk,pengadaan_produk.id_supplier, pengadaan_produk.total,pengadaan_produk.status, pengadaan_produk.created_by, pengadaan_produk.modified_by,
                         pengadaan_produk.created_at, pengadaan_produk.modified_at, supplier.nama "nama_supplier"');
         $this->db->from('pengadaan_produk');
         $this->db->join('supplier', 'pengadaan_produk.id_supplier = supplier.id_supplier');
