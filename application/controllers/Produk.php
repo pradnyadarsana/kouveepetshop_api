@@ -27,6 +27,10 @@ Class Produk extends RestController{
         return $this->returnData($this->db->get_where('produk', ["id_produk" => $id])->row(), false);
     }
 
+    public function underMinStok_get() {
+        return $this->returnData($this->db->query('select * from produk where jumlah_stok < min_stok')->result(), false);
+    }
+
     public function index_post($id = null){
         $validation = $this->form_validation;
         $rule = $this->ProdukModel->rules();
