@@ -311,6 +311,130 @@ Class CetakStruk extends RestController{
         $pdf->Output($id_transaksi.'.pdf','D');
         //.$param
     }
+    function pengadaanProduk_get($param){
+        // $this->load->helper('directory'); //load directory helper
+        $dir = "controllers/PDF/"; // Your Path to folder
+        // $map = directory_map($dir); /* This function reads the directory path specified in the first parameter and builds an array representation of it and all its contained files. */
+        $pdf = new FPDF('p','mm','A4');
+        // membuat halaman baru
+        $pdf->AddPage();
+    
+        $dataPengadaan = null;
+        $dataDetailPengadaan = null;
+
+        $nama_supplier = "-";
+        $nama_produk = "-";
+        $jumlah = "-";
+        $harga = "-";
+        $total = "-";
+        $total_harga = "-";
+
+        $resultPengadaan = $this->db->get_where('pengadaan_produk', ["id_pengadaan_produk" => $param]);
+        if($resultPengadaan->num_rows()!=0){
+            $dataPengadaan = $resultPengadaan->row();
+            $dataDetailPengadaan = $this->db->get_where('detail_pengadaan', ["id_pengadaan_produk" => $param])->result();
+
+            if($dataPengadaan->id_supplier!=null){
+                $id_supplier = $dataPengadaan->id_supplier;
+                $supplier = $this->db->get_where('supplier', ["id_supplier" => $id_supplier])->row();
+                $nama_supplier = $supplier->nama;
+                $telp_supplier = $supplier->telp;
+                $alamat_supplier = $supplier->alamat;
+            }
+            // if($dataPengadaan->id_produk!=null){
+            //     $id_produk = $dataPengadaan->id_produk;
+            //     $produk = $this->db->get_where('produk', ["id_produk" => $id_produk])->row();
+            //     $nama_produk = $produk->nama;
+            // }
+           
+        }else{
+            $this->returnData("ID Pengadaan Produk tidak ditemukan!",true);
+        }
+
+        $total = $dataPengadaan->total;
+        $id_pengadaan_produk = $dataPengadaan->id_pengadaan_produk;
+        $tgl = $dataPengadaan->created_at;
+        
+
+        $month_name = array("Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember");
+        $nowDate = date("d");
+        $nowMonth = date("m");
+        $nowYear = date("Y");
+        //setlocale(LC_TIME, 'id');
+        //$month_name = date('F', mktime(0, 0, 0, $nowMonth));
+        $id_p = sprintf( $id_pengadaan_produk);
+        $newDate = date("Y-m-d", strtotime($tgl));
+        // setting jenis font yang akan digunakan
+        $pdf->Image(APPPATH.'controllers/PDF/Logo/kouvee.png',10,10,-200);
+        // $pdf->Image(APPPATH.'controllers/PDF/Logo/kouveelogo.png',20,25,-800);
+        $pdf->Cell(10,50,'',0,1);
+        // $pdf->Image(APPPATH.'controllers/PDF/Logo/kotak.jpg',5,80,-700);
+        // Memberikan space kebawah agar tidak terlalu rapat
+        $pdf->Cell(70);
+        $pdf->SetFont('Arial','B',14);
+        $pdf->Cell(50,7,'Surat Pemesanan',0,1,'C');
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140);
+        $pdf->Cell(15,8,'NO',0,0);
+        $pdf->Cell(15,8,': '.$id_p,0,1);
+        $pdf->Cell(140);
+        $pdf->Cell(15,8,'Tanggal',0,0);
+        $pdf->Cell(15,8,': '.$tgl,0,0);
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(10,10,'',0,1);
+        $pdf->Image(APPPATH.'controllers/PDF/kotak.jpg',5,80,-600);
+        // $pdf->Cell(45,6,'Supplier  ',0,0);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(45,6,'Kepada Yth.',0,1);
+        $pdf->Cell(5,5,'',0,1);
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(45,6,$nama_supplier,0,1);
+        // $pdf->Cell(45,6,'Alamat ',0,0);
+        $pdf->Cell(45,6,$alamat_supplier,0,1);
+        // $pdf->Cell(45,6,'Telp  ',0,0);
+        $pdf->Cell(45,6,$telp_supplier,0,1);
+        $pdf->Cell(10,10,'',0,1);
+        // $pdf->Cell(70);
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(45,7,'Mohon disediakan produk-produk berikut :',0,1,'L');
+        $pdf->SetFont('Arial','B',14);
+        $pdf->Cell(180,7,'_________________________________________________________________',0,1,'C');
+
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(10,6,'NO',1,0,'C');
+        $pdf->Cell(70,6,'NAMA PRODUK',1,0,'C');
+        $pdf->Cell(40,6,'Satuan',1,0,'C');
+        $pdf->Cell(60,6,'JUMLAH',1,1,'C');
+
+        $pdf->SetFont('Arial','',10);
+        $i = 1;
+
+        foreach ($dataDetailPengadaan as $loop){
+            if($loop->id_pengadaan_produk == $dataPengadaan->id_pengadaan_produk)
+            {
+                
+                $id_produk = $loop->id_produk;
+                $jumlah = $loop->jumlah;
+                $produk = $this->db->get_where('produk', ["id_produk" => $id_produk])->row();
+                $satuan = $produk->satuan;
+                $pdf->Cell(10,10,$i,1,0,'C');
+                $pdf->Cell(70,10,$produk->nama,1,0,'L');
+                $pdf->Cell(40,10,$satuan,1,0,'C');
+                $pdf->Cell(60,10,$loop->jumlah,1,1,'C');
+
+            }
+            $i++;
+        }
+
+
+        $now = date("d-m-Y");
+        $pdf->Cell(10,20,'',0,1);
+        $pdf->Cell(135);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(30,7,'Dicetak tanggal '.$nowDate.' '.$month_name[intval($nowMonth)-1].' '.$nowYear,0,1,'C');
+        $pdf->Output($id_pengadaan_produk.'.pdf','D');
+        //.$param
+    }
 
     public function returnData($msg,$error){
         $response['error']=$error;
