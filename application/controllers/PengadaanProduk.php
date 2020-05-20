@@ -12,7 +12,50 @@ Class PengadaanProduk extends RestController{
         $this->load->library('pdf');
         include_once APPPATH . '/third_party/fpdf/fpdf.php';
     }
+  
+    public function getPengadaanByMonth_get($param){
+        $i = 1;
+        $totalPengeluaran = 0;
+        $produk = array();
+        $cekNama = array();
+        $bulan = explode("-", $param);
+        $data = "SELECT pengadaan_produk.id_pengadaan_produk , pengadaan_produk.total  from pengadaan_produk
+        WHERE month(pengadaan_produk.created_at)=? AND year(pengadaan_produk.created_at)=? AND pengadaan_produk.status = 'Pesanan Selesai'
+        GROUP BY pengadaan_produk.id_pengadaan_produk";
+        $hasil = $this->db->query($data,[$bulan[1],$bulan[0]])->result();
+        $detailPengadaan = "SELECT produk.nama, detail_pengadaan.total_harga from detail_pengadaan
+                INNER JOIN produk USING(id_produk)
+                WHERE detail_pengadaan.id_pengadaan_produk = ?
+                GROUP BY produk.nama";
+        for($k = 0;$k <sizeof($hasil); $k++ ){
+                $hasil2[$k] = $this->db->query($detailPengadaan,[$hasil[$k]->id_pengadaan_produk])->result();
+            }
 
+        for($l = 0 ; $l < count($hasil2) ; $l++){
+            for($m = 0 ; $m < count($hasil2) ; $m++){
+                if(isset($hasil2[$l][$m])){
+
+                    array_push($produk,$hasil2[$l][$m]); 
+                }
+                }
+            }
+        for($o = 0; $o<count($produk);$o++){
+            for($p = $o +1; $p<count($produk); $p++){
+                if($produk[$o]->nama == $produk[$p]->nama){
+                    $produk[$o]->total_harga = $produk[$o]->total_harga + $produk[$p]->total_harga;
+                    \array_splice($produk, $p, 1);
+                }
+            }
+        }
+        for($q = 0; $q< count($hasil); $q++){
+            $totalPengeluaran = $totalPengeluaran + $hasil[$q]->total;
+        }
+            print_r($produk);
+            print_r($totalPengeluaran);
+
+        }
+
+    
     public function getWithJoin_get() {
         $this->db->select('pengadaan_produk.id_pengadaan_produk,pengadaan_produk.id_supplier, pengadaan_produk.total,pengadaan_produk.status, pengadaan_produk.created_by, pengadaan_produk.modified_by,
                         pengadaan_produk.created_at, pengadaan_produk.modified_at, supplier.nama "nama_supplier"');
@@ -44,6 +87,9 @@ Class PengadaanProduk extends RestController{
 
     public function search_get($id = null){
         return $this->returnData($this->db->get_where('pengadaan_produk', ["id_pengadaan_produk" => $id])->row(), false);
+    }
+    public function getMonth_get(){
+        return $this->returnData($this->db->get_where('pengadaan_produk', [date('F',strtotime('created_at')) => date('F',strtotime(date('Y-m-d')))])->result(), false);
     }
 
     public function index_post(){

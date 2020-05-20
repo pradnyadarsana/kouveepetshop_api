@@ -436,6 +436,144 @@ Class CetakStruk extends RestController{
         //.$param
     }
 
+    function laporanPengadaanBulanan_get($param){
+        // $this->load->helper('directory'); //load directory helper
+        $dir = "controllers/PDF/"; // Your Path to folder
+        // $map = directory_map($dir); /* This function reads the directory path specified in the first parameter and builds an array representation of it and all its contained files. */
+        $pdf = new FPDF('p','mm','A4');
+        // membuat halaman baru
+        $pdf->AddPage();
+    
+        $i = 1;
+        $totalPengeluaran = 0;
+        $produk = array();
+        $cekNama = array();
+        $bulan = explode("-", $param);
+        $data = "SELECT pengadaan_produk.id_pengadaan_produk , pengadaan_produk.total  from pengadaan_produk
+        WHERE month(pengadaan_produk.created_at)=? AND year(pengadaan_produk.created_at)=? AND pengadaan_produk.status = 'Pesanan Selesai'
+        GROUP BY pengadaan_produk.id_pengadaan_produk";
+        $hasil = $this->db->query($data,[$bulan[1],$bulan[0]])->result();
+        $detailPengadaan = "SELECT produk.nama, detail_pengadaan.total_harga from detail_pengadaan
+                INNER JOIN produk USING(id_produk)
+                WHERE detail_pengadaan.id_pengadaan_produk = ?
+                GROUP BY produk.nama";
+        for($k = 0;$k <sizeof($hasil); $k++ ){
+                $hasil2[$k] = $this->db->query($detailPengadaan,[$hasil[$k]->id_pengadaan_produk])->result();
+            }
+
+        for($l = 0 ; $l < count($hasil2) ; $l++){
+            for($m = 0 ; $m < count($hasil2) ; $m++){
+                if(isset($hasil2[$l][$m])){
+
+                    array_push($produk,$hasil2[$l][$m]); 
+                }
+                }
+            }
+        for($o = 0; $o<count($produk);$o++){
+            for($p = $o +1; $p<count($produk); $p++){
+                if($produk[$o]->nama == $produk[$p]->nama){
+                    $produk[$o]->total_harga = $produk[$o]->total_harga + $produk[$p]->total_harga;
+                    \array_splice($produk, $p, 1);
+                }
+            }
+        }
+        for($q = 0; $q< count($hasil); $q++){
+            $totalPengeluaran = $totalPengeluaran + $hasil[$q]->total;
+        }
+
+        
+
+        $tgl = $bulan[1];
+        if($bulan[1]==1){
+            $tgl = 'Januari';
+        }else if($bulan[1]==2){
+            $tgl = 'Februari';
+        }else if($bulan[1]==3){
+            $tgl = 'Maret';
+        }else if($bulan[1]==4){
+            $tgl = 'April';
+        }else if($bulan[1]==5){
+            $tgl = 'Mei';
+        }else if($bulan[1]==6){
+            $tgl = 'Juni';
+        }else if($bulan[1]==7){
+            $tgl = 'Juli';
+        }else if($bulan[1]==8){
+            $tgl = 'Agustus';
+        }else if($bulan[1]==9){
+            $tgl = 'September';
+        }else if($bulan[1]==10){
+            $tgl = 'Oktober';
+        }else if($bulan[1]==11){
+            $tgl = 'November';
+        }else if($bulan[1]==12){
+            $tgl = 'Desember';
+        }
+
+        $month_name = array("Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember");
+        $nowDate = date("d");
+        $nowMonth = date("m");
+        $nowYear = date("Y");
+        //setlocale(LC_TIME, 'id');
+        //$month_name = date('F', mktime(0, 0, 0, $nowMonth));
+        
+        $newDate = date("Y-m-d", strtotime($tgl));
+        // setting jenis font yang akan digunakan
+        $pdf->Image(APPPATH.'controllers/PDF/Logo/kouvee.png',10,10,-200);
+        // $pdf->Image(APPPATH.'controllers/PDF/Logo/kouveelogo.png',20,25,-800);
+        $pdf->Cell(10,50,'',0,1);
+        // $pdf->Image(APPPATH.'controllers/PDF/Logo/kotak.jpg',5,80,-700);
+        // Memberikan space kebawah agar tidak terlalu rapat
+        $pdf->Cell(70);
+        $pdf->SetFont('Arial','B',14);
+        $pdf->Cell(50,7,'Laporan Pengadaan Bulanan',0,1,'C');
+        $pdf->SetFont('Arial','',12);
+        $pdf->Cell(15,8,'Bulan',0,0);
+        $pdf->Cell(15,8,': '.$tgl,0,1);
+        $pdf->Cell(15,8,'Tahun',0,0);
+        $pdf->Cell(15,8,': '.$bulan[0],0,0);
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(10,10,'',0,1);
+
+        $pdf->Cell(10,10,'',0,1);
+        // $pdf->Cell(70);
+        $pdf->SetFont('Arial','B',14);
+        $pdf->Cell(180,7,'_________________________________________________________________',0,1,'C');
+
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(10,6,'NO',1,0,'C');
+        $pdf->Cell(85,6,'NAMA PRODUK',1,0,'C');
+        $pdf->Cell(85,6,'JUMLAH PENGELUARAN',1,1,'C');
+
+        $pdf->SetFont('Arial','',10);
+        $i = 1;
+
+        foreach ($produk as $loop){
+      
+                
+
+                $pdf->Cell(10,10,$i,1,0,'C');
+                $pdf->Cell(85,10,$loop->nama,1,0,'L');
+                $pdf->Cell(85,10,'Rp  '.$loop->total_harga,1,1,'L');
+
+            
+            $i++;
+        }
+        $pdf->Cell(10,10,'',0,1);
+ 
+        $pdf->SetFont('Arial','B',16);
+        $pdf->Cell(65,10,'Total :Rp. '.$totalPengeluaran,1,1);
+
+
+        $now = date("d-m-Y");
+        $pdf->Cell(10,20,'',0,1);
+        $pdf->Cell(135);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(30,7,'Dicetak tanggal '.$nowDate.' '.$month_name[intval($nowMonth)-1].' '.$nowYear,0,1,'C');
+        $pdf->Output($nowDate.'.pdf','I');
+        //.$param
+    }
+
     public function returnData($msg,$error){
         $response['error']=$error;
         $response['message']=$msg;
