@@ -11,6 +11,165 @@ Class TransaksiProduk extends RestController{
         $this->load->library('form_validation');
     }
 
+    public function getTransaksiByMonth_get($param){
+        $i = 1;
+        $totalPengeluaran = 0;
+        $produk1 = array();
+        $produk2 = array();
+        $produk3 = array();
+        $produk4 = array();
+        $produk5 = array();
+        $produk6 = array();
+        $produk7 = array();
+        $produk8 = array();
+        $produk9 = array();
+        $produk10 = array();
+        $produk11 = array();
+        $produk12 = array();
+        $jumlahMax1 = '0';
+        $jumlahMax2 = '0';
+        $jumlahMax3 = '0';
+        $jumlahMax4 = '0';
+        $jumlahMax5 = '0';
+        $jumlahMax6 = '0';
+        $jumlahMax7 = '0';
+        $jumlahMax8 = '0';
+        $jumlahMax9 = '0';
+        $jumlahMax10 = '0';
+        $jumlahMax11 = '0';
+        $jumlahMax12 = '0';
+        $produkMax1 = 'Tidak Ada Transaksi';
+        $produkMax2= 'Tidak Ada Transaksi';
+        $produkMax3 = 'Tidak Ada Transaksi';
+        $produkMax4 = 'Tidak Ada Transaksi';
+        $produkMax5 = 'Tidak Ada Transaksi';
+        $produkMax6 = 'Tidak Ada Transaksi';
+        $produkMax7 = 'Tidak Ada Transaksi';
+        $produkMax8 = 'Tidak Ada Transaksi';
+        $produkMax9 = 'Tidak Ada Transaksi';
+        $produkMax10 = 'Tidak Ada Transaksi';
+        $produkMax11= 'Tidak Ada Transaksi';
+        $produkMax12 = 'Tidak Ada Transaksi';
+        $data = "SELECT transaksi_produk.id_transaksi_produk , transaksi_produk.subtotal  from transaksi_produk
+        WHERE  year(transaksi_produk.created_at)=? AND transaksi_produk.status = 'Lunas'
+        GROUP BY transaksi_produk.id_transaksi_produk";
+        $hasil = $this->db->query($data,[$param])->result();
+        $detailTransaksi = "SELECT produk.nama, detail_transaksi_produk.total_harga, detail_transaksi_produk.jumlah,month(detail_transaksi_produk.created_at) as 'bulan' from detail_transaksi_produk
+                INNER JOIN produk USING(id_produk)
+                WHERE detail_transaksi_produk.id_transaksi_produk = ?
+                GROUP BY produk.nama";
+
+        for($k = 0;$k <sizeof($hasil); $k++ ){
+                $hasil2[$k] = $this->db->query($detailTransaksi,[$hasil[$k]->id_transaksi_produk])->result();
+            }
+
+        for($l = 0 ; $l < count($hasil2) ; $l++){
+            for($m = 0 ; $m < count($hasil2) ; $m++){
+                if(isset($hasil2[$l][$m])){
+                    if($hasil2[$l][$m]->bulan==1){
+                        array_push($produk1,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==2){
+                        array_push($produk2,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==3){
+                        array_push($produk3,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==4){
+                        array_push($produk4,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==5){
+                        array_push($produk5,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==6){
+                        array_push($produk6,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==7){
+                        array_push($produk7,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==8){
+                        array_push($produk8,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==9){
+                        array_push($produk9,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==10){
+                        array_push($produk10,$hasil2[$l][$m]); 
+                    }elseif($hasil2[$l][$m]->bulan==11){
+                        array_push($produk11,$hasil2[$l][$m]); 
+                    }else{
+                        array_push($produk12,$hasil2[$l][$m]); 
+                    }
+                }
+                }
+            }
+        for($o = 0; $o<count($produk1);$o++){
+            if($produk1[$o]->jumlah > $jumlahMax1){
+                $jumlahMax1 = $produk1[$o]->jumlah;
+                $produkMax1 = $produk1[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk2);$o++){
+            if($produk2[$o]->jumlah > $jumlahMax2){
+                $jumlahMax2 = $produk2[$o]->jumlah;
+                $produkMax2 = $produk2[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk3);$o++){
+            if($produk3[$o]->jumlah > $jumlahMax3){
+                $jumlahMax3 = $produk3[$o]->jumlah;
+                $produkMax3 = $produk3[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk4);$o++){
+            if($produk4[$o]->jumlah > $jumlahMax4){
+                $jumlahMax4 = $produk4[$o]->jumlah;
+                $produkMax4 = $produk4[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk5);$o++){
+            if($produk5[$o]->jumlah > $jumlahMax5){
+                $jumlahMax5 = $produk5[$o]->jumlah;
+                $produkMax5 = $produk5[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk6);$o++){
+            if($produk6[$o]->jumlah > $jumlahMax6){
+                $jumlahMax6= $produk6[$o]->jumlah;
+                $produkMax6 = $produk6[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk7);$o++){
+            if($produk7[$o]->jumlah > $jumlahMax7){
+                $jumlahMax7 = $produk7[$o]->jumlah;
+                $produkMax7 = $produk7[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk8);$o++){
+            if($produk8[$o]->jumlah > $jumlahMax8){
+                $jumlahMax8 = $produk8[$o]->jumlah;
+                $produkMax8 = $produk8[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk9);$o++){
+            if($produk9[$o]->jumlah > $jumlahMax9){
+                $jumlahMax9 = $produk9[$o]->jumlah;
+                $produkMax9= $produk9[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk10);$o++){
+            if($produk10[$o]->jumlah > $jumlahMax10){
+                $jumlahMax10 = $produk10[$o]->jumlah;
+                $produkMax10 = $produk10[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk11);$o++){
+            if($produk11[$o]->jumlah > $jumlahMax11){
+                $jumlahMax11 = $produk11[$o]->jumlah;
+                $produkMax11= $produk11[$o]->nama;
+            }
+        }
+        for($o = 0; $o<count($produk12);$o++){
+            if($produk12[$o]->jumlah > $jumlahMax12){
+                $jumlahMax12 = $produk12[$o]->jumlah;
+                $produkMax12 = $produk12[$o]->nama;
+            }
+        }
+            print_r($jumlahMax5);
+            print_r($produkMax5);
+        }
+
     public function getWithJoin_get() {
         $this->db->select('id_transaksi_produk, transaksi_produk.id_hewan, hewan.nama "nama_hewan", hewan.id_jenis_hewan, jenis_hewan.nama "jenis_hewan", hewan.id_pelanggan, pelanggan.nama "nama_pelanggan", pelanggan.telp "telp",
                         transaksi_produk.subtotal, transaksi_produk.diskon, transaksi_produk.total, transaksi_produk.status,
