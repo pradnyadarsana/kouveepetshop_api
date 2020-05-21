@@ -825,6 +825,189 @@ Class CetakStruk extends RestController{
         $pdf->Output($nowDate.'.pdf','I');
         //.$param
     }
+    function laporanPendapatanBulanan_get($param){
+        // $this->load->helper('directory'); //load directory helper
+        $dir = "controllers/PDF/"; // Your Path to folder
+        // $map = directory_map($dir); /* This function reads the directory path specified in the first parameter and builds an array representation of it and all its contained files. */
+        $pdf = new FPDF('p','mm','A4');
+        // membuat halaman baru
+        $pdf->AddPage();
+    
+        $i = 1;
+        $totalProduk = 0;
+        $totalLayanan = 0;
+        $produk = array();
+        $layanan = array();
+        $bulan = explode("-", $param);
+        $dataProduk = "SELECT transaksi_produk.id_transaksi_produk , transaksi_produk.subtotal  from transaksi_produk
+        WHERE month(transaksi_produk.created_at)=? AND year(transaksi_produk.created_at)=? AND transaksi_produk.status = 'Lunas'
+        GROUP BY transaksi_produk.id_transaksi_produk";
+        $hasilProduk = $this->db->query($dataProduk,[$bulan[1],$bulan[0]])->result();
+
+
+        $dataLayanan = "SELECT transaksi_layanan.id_transaksi_layanan , transaksi_layanan.subtotal  from transaksi_layanan
+        WHERE month(transaksi_layanan.created_at)=? AND year(transaksi_layanan.created_at)=? AND transaksi_layanan.status = 'Lunas'
+        GROUP BY transaksi_layanan.id_transaksi_layanan";
+        $hasilLayanan = $this->db->query($dataLayanan,[$bulan[1],$bulan[0]])->result();
+      
+
+        $detailProduk = "SELECT produk.nama, detail_transaksi_produk.total_harga from detail_transaksi_produk
+                INNER JOIN produk USING(id_produk)
+                WHERE detail_transaksi_produk.id_transaksi_produk = ?
+                GROUP BY produk.nama";
+        for($k = 0;$k <sizeof($hasilProduk); $k++ ){
+                $hasilProduk2[$k] = $this->db->query($detailProduk,[$hasilProduk[$k]->id_transaksi_produk])->result();
+            }
+            // print_r($hasilProduk);
+
+        $detailLayanan = "SELECT layanan.nama, detail_transaksi_layanan.total_harga from detail_transaksi_layanan
+                JOIN harga_layanan USING(id_harga_layanan)
+                INNER JOIN layanan USING(id_layanan)
+                WHERE detail_transaksi_layanan.id_transaksi_layanan = ?
+                GROUP BY layanan.nama";
+        for($k = 0;$k <sizeof($hasilLayanan); $k++ ){
+                $hasilLayanan2[$k] = $this->db->query($detailLayanan,[$hasilLayanan[$k]->id_transaksi_layanan])->result();
+            }
+            // print_r($hasilLayanan2);
+
+        for($l = 0 ; $l < count($hasilProduk2) ; $l++){
+            for($m = 0 ; $m < count($hasilProduk2) ; $m++){
+                if(isset($hasilProduk2[$l][$m])){
+
+                    array_push($produk,$hasilProduk2[$l][$m]); 
+                }
+                }
+            }
+        for($l = 0 ; $l < count($hasilLayanan2) ; $l++){
+            for($m = 0 ; $m < count($hasilLayanan2) ; $m++){
+                if(isset($hasilLayanan2[$l][$m])){
+
+                    array_push($layanan,$hasilLayanan2[$l][$m]); 
+                }
+                }
+            }
+        for($o = 0; $o<count($produk);$o++){
+            for($p = $o +1; $p<count($produk); $p++){
+                if($produk[$o]->nama == $produk[$p]->nama){
+                    $produk[$o]->total_harga = $produk[$o]->total_harga + $produk[$p]->total_harga;
+                    \array_splice($produk, $p, 1);
+                }
+            }
+        }
+        for($o = 0; $o<count($layanan);$o++){
+            for($p = $o +1; $p<count($layanan); $p++){
+                if($layanan[$o]->nama == $layanan[$p]->nama){
+                    $layanan[$o]->total_harga = $layanan[$o]->total_harga + $layanan[$p]->total_harga;
+                    \array_splice($layanan, $p, 1);
+                }
+            }
+        }
+        for($q = 0; $q< count($hasilProduk); $q++){
+            $totalProduk = $totalProduk + $hasilProduk[$q]->subtotal;
+        }
+        for($q = 0; $q< count($hasilLayanan); $q++){
+            $totalLayanan = $totalLayanan + $hasilLayanan[$q]->subtotal;
+        }
+
+        $tgl = $bulan[1];
+        $tahun = $bulan[0];
+        if($bulan[1]==1){
+            $tgl = 'Januari';
+        }else if($bulan[1]==2){
+            $tgl = 'Februari';
+        }else if($bulan[1]==3){
+            $tgl = 'Maret';
+        }else if($bulan[1]==4){
+            $tgl = 'April';
+        }else if($bulan[1]==5){
+            $tgl = 'Mei';
+        }else if($bulan[1]==6){
+            $tgl = 'Juni';
+        }else if($bulan[1]==7){
+            $tgl = 'Juli';
+        }else if($bulan[1]==8){
+            $tgl = 'Agustus';
+        }else if($bulan[1]==9){
+            $tgl = 'September';
+        }else if($bulan[1]==10){
+            $tgl = 'Oktober';
+        }else if($bulan[1]==11){
+            $tgl = 'November';
+        }else if($bulan[1]==12){
+            $tgl = 'Desember';
+        }
+
+
+        $month_name = array("Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember");
+        $nowDate = date("d");
+        $nowMonth = date("m");
+        $nowYear = date("Y");
+        //setlocale(LC_TIME, 'id');
+        //$month_name = date('F', mktime(0, 0, 0, $nowMonth));
+        
+        $newDate = date("Y-m-d", strtotime($tgl));
+        // setting jenis font yang akan digunakan
+        $pdf->Image(APPPATH.'controllers/PDF/Logo/kouvee.png',10,10,-200);
+        $pdf->Cell(10,50,'',0,1);
+        $pdf->Cell(70);
+        $pdf->SetFont('Arial','B',14);
+        $pdf->Cell(50,7,'Laporan Pendapatan Bulanan',0,1,'C');
+        $pdf->SetFont('Arial','',12);
+        $pdf->Cell(15,8,'Bulan',0,0);
+        $pdf->Cell(15,8,': '.$tgl,0,1);
+        $pdf->Cell(15,8,'Tahun',0,0);
+        $pdf->Cell(15,8,': '.$tahun,0,1);
+
+        $pdf->SetFont('Arial','B',14);
+        $pdf->Cell(180,7,'_________________________________________________________________',0,1,'C');
+
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(10,6,'NO',1,0,'C');
+        $pdf->Cell(85,6,'NAMA PRODUK',1,0,'C');
+        $pdf->Cell(85,6,'HARGA',1,1,'C');
+        $pdf->SetFont('Arial','',10);
+        $i = 1;
+
+        foreach ($produk as $loop){
+                $pdf->Cell(10,10,$i,1,0,'C');
+                $pdf->Cell(85,10,$loop->nama,1,0,'L');
+                $pdf->Cell(85,10,'Rp  '.$loop->total_harga,1,1,'L');     
+            $i++;
+        }
+
+        $pdf->Cell(10,10,'',0,1);
+ 
+        $pdf->SetFont('Arial','B',16);
+        $pdf->Cell(65,10,'Total :Rp. '.$totalProduk,1,1);
+
+        $pdf->Cell(180,7,'',0,1,'C');
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(10,6,'NO',1,0,'C');
+        $pdf->Cell(85,6,'NAMA JASA LAYANAN',1,0,'C');
+        $pdf->Cell(85,6,'HARGA',1,1,'C');
+        $pdf->SetFont('Arial','',10);
+        $i = 1;
+
+        foreach ($layanan as $loop){
+                $pdf->Cell(10,10,$i,1,0,'C');
+                $pdf->Cell(85,10,$loop->nama,1,0,'L');
+                $pdf->Cell(85,10,'Rp  '.$loop->total_harga,1,1,'L');     
+            $i++;
+        }
+
+        $pdf->Cell(10,10,'',0,1);
+ 
+        $pdf->SetFont('Arial','B',16);
+        $pdf->Cell(65,10,'Total :Rp. '.$totalLayanan,1,1);
+
+        $now = date("d-m-Y");
+        $pdf->Cell(10,20,'',0,1);
+        $pdf->Cell(135);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(30,7,'Dicetak tanggal '.$nowDate.' '.$month_name[intval($nowMonth)-1].' '.$nowYear,0,1,'C');
+        $pdf->Output($nowDate.'.pdf','I');
+        //.$param
+    }
 
     public function returnData($msg,$error){
         $response['error']=$error;
