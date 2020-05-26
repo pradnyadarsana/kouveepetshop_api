@@ -47,10 +47,10 @@ Class Laporan extends RestController{
         for($k = 0;$k <sizeof($hasil); $k++ ){
                 $hasil2[$k] = $this->db->query($detailPengadaan,[$hasil[$k]->id_pengadaan_produk])->result();
             }
-        
+           
             if(isset($hasil2)){
                 for($l = 0 ; $l < count($hasil2) ; $l++){
-                    for($m = 0 ; $m < count($hasil2) ; $m++){
+                    for($m = 0 ; $m < count($hasil2[$l]) ; $m++){
                         if(isset($hasil2[$l][$m])){
         
                             array_push($produk,$hasil2[$l][$m]); 
@@ -60,6 +60,16 @@ Class Laporan extends RestController{
                 for($o = 0; $o<count($produk);$o++){
                     for($p = $o +1; $p<count($produk); $p++){
                         if($produk[$o]->nama == $produk[$p]->nama){
+                            
+                            $produk[$o]->total_harga = $produk[$o]->total_harga + $produk[$p]->total_harga;
+                            \array_splice($produk, $p, 1);
+                        }
+                    }
+                }
+                for($o = 0; $o<count($produk);$o++){
+                    for($p = $o +1; $p<count($produk); $p++){
+                        if($produk[$o]->nama == $produk[$p]->nama){
+                            
                             $produk[$o]->total_harga = $produk[$o]->total_harga + $produk[$p]->total_harga;
                             \array_splice($produk, $p, 1);
                         }
@@ -235,7 +245,7 @@ Class Laporan extends RestController{
         $pdf->Cell(135);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(30,7,'Dicetak tanggal '.$nowDate.' '.$month_name[intval($nowMonth)-1].' '.$nowYear,0,1,'C');
-        $pdf->Output('Laporan Pengadaan Bulan '.$tgl.'-'.$bulan[0].'.pdf','D');
+        $pdf->Output('Laporan Pengadaan Bulan '.$tgl.'-'.$bulan[0].'.pdf','I');
         //.$param
     }
     function laporanPengadaanTahunan_get($param){
@@ -542,72 +552,144 @@ Class Laporan extends RestController{
                         }
                     }
                     for($o = 0; $o<count($produk1);$o++){
-                        if($produk1[$o]->jumlah > $jumlahMax1){
+                        for($p = $o +1; $p<count($produk1); $p++){
+                            if($produk1[$o]->nama == $produk1[$p]->nama){
+                                
+                                $produk1[$o]->jumlah = $produk1[$o]->jumlah + $produk1[$p]->jumlah;
+                            }
+                        }
+                        if($produk1[$o]->jumlah > $jumlahMax1){                         
                             $jumlahMax1 = $produk1[$o]->jumlah;
                             $produkMax1 = $produk1[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk2);$o++){
+                        for($p = $o +1; $p<count($produk2); $p++){
+                            if($produk2[$o]->nama == $produk2[$p]->nama){
+                                
+                                $produk2[$o]->jumlah = $produk2[$o]->jumlah + $produk2[$p]->jumlah;
+                            }
+                        }
                         if($produk2[$o]->jumlah > $jumlahMax2){
                             $jumlahMax2 = $produk2[$o]->jumlah;
                             $produkMax2 = $produk2[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk3);$o++){
+                        for($p = $o +1; $p<count($produk3); $p++){
+                            if($produk3[$o]->nama == $produk3[$p]->nama){
+                                
+                                $produk3[$o]->jumlah = $produk3[$o]->jumlah + $produk3[$p]->jumlah;
+                            }
+                        }
                         if($produk3[$o]->jumlah > $jumlahMax3){
                             $jumlahMax3 = $produk3[$o]->jumlah;
                             $produkMax3 = $produk3[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk4);$o++){
+                        for($p = $o +1; $p<count($produk4); $p++){
+                            if($produk4[$o]->nama == $produk4[$p]->nama){
+                                
+                                $produk4[$o]->jumlah = $produk4[$o]->jumlah + $produk4[$p]->jumlah;
+                            }
+                        }
                         if($produk4[$o]->jumlah > $jumlahMax4){
                             $jumlahMax4 = $produk4[$o]->jumlah;
                             $produkMax4 = $produk4[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk5);$o++){
+                        for($p = $o +1; $p<count($produk5); $p++){
+                            if($produk5[$o]->nama == $produk5[$p]->nama){
+                                
+                                $produk5[$o]->jumlah = $produk5[$o]->jumlah + $produk5[$p]->jumlah;
+                            }
+                        }
                         if($produk5[$o]->jumlah > $jumlahMax5){
                             $jumlahMax5 = $produk5[$o]->jumlah;
                             $produkMax5 = $produk5[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk6);$o++){
+                        for($p = $o +1; $p<count($produk6); $p++){
+                            if($produk6[$o]->nama == $produk6[$p]->nama){
+                                
+                                $produk6[$o]->jumlah = $produk6[$o]->jumlah + $produk6[$p]->jumlah;
+                            }
+                        }
                         if($produk6[$o]->jumlah > $jumlahMax6){
                             $jumlahMax6= $produk6[$o]->jumlah;
                             $produkMax6 = $produk6[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk7);$o++){
+                        for($p = $o +1; $p<count($produk7); $p++){
+                            if($produk7[$o]->nama == $produk7[$p]->nama){
+                                
+                                $produk7[$o]->jumlah = $produk7[$o]->jumlah + $produk7[$p]->jumlah;
+                            }
+                        }
                         if($produk7[$o]->jumlah > $jumlahMax7){
                             $jumlahMax7 = $produk7[$o]->jumlah;
                             $produkMax7 = $produk7[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk8);$o++){
+                        for($p = $o +1; $p<count($produk8); $p++){
+                            if($produk8[$o]->nama == $produk8[$p]->nama){
+                                
+                                $produk8[$o]->jumlah = $produk8[$o]->jumlah + $produk8[$p]->jumlah;
+                            }
+                        }
                         if($produk8[$o]->jumlah > $jumlahMax8){
                             $jumlahMax8 = $produk8[$o]->jumlah;
                             $produkMax8 = $produk8[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk9);$o++){
+                        for($p = $o +1; $p<count($produk9); $p++){
+                            if($produk9[$o]->nama == $produk9[$p]->nama){
+                                
+                                $produk9[$o]->jumlah = $produk9[$o]->jumlah + $produk9[$p]->jumlah;
+                            }
+                        }
                         if($produk9[$o]->jumlah > $jumlahMax9){
                             $jumlahMax9 = $produk9[$o]->jumlah;
                             $produkMax9= $produk9[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk10);$o++){
+                        for($p = $o +1; $p<count($produk10); $p++){
+                            if($produk10[$o]->nama == $produk10[$p]->nama){
+                                
+                                $produk10[$o]->jumlah = $produk10[$o]->jumlah + $produk10[$p]->jumlah;
+                            }
+                        }
                         if($produk10[$o]->jumlah > $jumlahMax10){
                             $jumlahMax10 = $produk10[$o]->jumlah;
                             $produkMax10 = $produk10[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk11);$o++){
+                        for($p = $o +1; $p<count($produk11); $p++){
+                            if($produk11[$o]->nama == $produk11[$p]->nama){
+                                
+                                $produk11[$o]->jumlah = $produk11[$o]->jumlah + $produk11[$p]->jumlah;
+                            }
+                        }
                         if($produk11[$o]->jumlah > $jumlahMax11){
                             $jumlahMax11 = $produk11[$o]->jumlah;
                             $produkMax11= $produk11[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($produk12);$o++){
+                        for($p = $o +1; $p<count($produk12); $p++){
+                            if($produk12[$o]->nama == $produk12[$p]->nama){
+                                
+                                $produk12[$o]->jumlah = $produk12[$o]->jumlah + $produk12[$p]->jumlah;
+                            }
+                        }
                         if($produk12[$o]->jumlah > $jumlahMax12){
                             $jumlahMax12 = $produk12[$o]->jumlah;
                             $produkMax12 = $produk12[$o]->nama;
@@ -729,7 +811,7 @@ Class Laporan extends RestController{
         $pdf->Cell(135);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(30,7,'Dicetak tanggal '.$nowDate.' '.$month_name[intval($nowMonth)-1].' '.$nowYear,0,1,'C');
-        $pdf->Output('Laporan Produk Terlaris '.'-'.$bulan[0].'.pdf','D');
+        $pdf->Output('Laporan Produk Terlaris '.'-'.$bulan[0].'.pdf','I');
         //.$param
     }
     function laporanLayananTerlaris_get($param){
