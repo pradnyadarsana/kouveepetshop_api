@@ -12,15 +12,49 @@ Class Notifikasi extends RestController{
     }
 
     public function index_get(){
+        return $this->returnData($this->db->get('notifikasi')->result(), false);
+    }
+
+    public function all_get(){
+        return $this->returnData($this->db->get('notifikasi')->result(), false);
+    }
+
+    public function allOrderAsc_get(){
+        $query = $this->db->from('notifikasi')->order_by('created_at', 'ASC')->get();
+        return $this->returnData($query->result(), false);
+    }
+
+    public function allOrderDesc_get(){
+        $query = $this->db->from('notifikasi')->order_by('created_at', 'DESC')->get();
+        return $this->returnData($query->result(), false);
+    }
+
+    public function new_get(){
         return $this->returnData($this->db->get_where('notifikasi', ["status" => 0])->result(), false);
+    }
+
+    public function newOrderAsc_get(){
+        $query = $this->db->from('notifikasi')->where(["status" => 0])->order_by('created_at', 'ASC')->get();
+        return $this->returnData($query->result(), false);
+    }
+
+    public function newOrderDesc_get(){
+        $query = $this->db->from('notifikasi')->where(["status" => 0])->order_by('created_at', 'DESC')->get();
+        return $this->returnData($query->result(), false);
     }
 
     public function opened_get(){
         return $this->returnData($this->db->get_where('notifikasi', ["status" => 1])->result(), false);
     }
 
-    public function all_get(){
-        return $this->returnData($this->db->get('notifikasi')->result(), false);
+    public function openedOrderAsc_get(){
+        $query = $this->db->from('notifikasi')->where(["status" => 1])->order_by('created_at', 'ASC')->get();
+        return $this->returnData($query->result(), false);
+    }
+
+    public function openedOrderDesc_get(){
+        $query = $this->db->from('notifikasi')->where(["status" => 1])->order_by('created_at', 'DESC')->get();
+        return $this->returnData($query->result(), false);
     }
 
     public function search_get($id){
@@ -45,4 +79,5 @@ Class Notifikasi extends RestController{
 Class NotifikasiData{
     public $id_produk;
     public $status;
+    public $created_at;
 }

@@ -9,6 +9,7 @@ class NotifikasiModel extends CI_Model
     public $id_notifikasi;
     public $id_produk;
     public $status;
+    public $created_at;
 
     public function updateStatusToOpened($id_notifikasi) {
         $data = $this->db->get_where('notifikasi',['id_notifikasi'=>$id_notifikasi, 'status'=> '0'])->row();
