@@ -196,7 +196,10 @@ class DetailTransaksiProdukModel extends CI_Model
         $updateData = [
             'jumlah_stok' => $new_sum
         ];
-        $this->db->where('id_produk',$data->id_produk)->update('produk', $updateData);
+        $result = $this->db->where('id_produk',$data->id_produk)->update('produk', $updateData);
+        if($result){
+            $this->manageNotifikasi($id_produk);
+        }
     }
 
     public function tambahStokProduk($id_produk, $qty){
@@ -205,7 +208,24 @@ class DetailTransaksiProdukModel extends CI_Model
         $updateData = [
             'jumlah_stok' => $new_sum
         ];
-        $this->db->where('id_produk',$data->id_produk)->update('produk', $updateData);
+        $result = $this->db->where('id_produk',$data->id_produk)->update('produk', $updateData);
+        if($result){
+            $this->manageNotifikasi($id_produk);
+        }
+    }
+
+    public function manageNotifikasi($id_produk){
+        $result = $this->db->query('select * from produk where id_produk='.$id_produk.' and jumlah_stok < min_stok ');
+        $notifResult = $this->db->get_where('notifikasi', ["id_produk" => $id_produk]);
+        if($result->num_rows()!=0){
+            if($notifResult->num_rows()==0){
+                $this->db->insert('notifikasi', ["id_produk"=>$id_produk]);
+            }
+        }else{
+            if($notifResult->num_rows()!=0){
+                $this->db->delete('notifikasi', ["id_produk"=>$id_produk]);
+            }
+        }
     }
 }
 ?>
