@@ -248,7 +248,7 @@ Class Laporan extends RestController{
         $pdf->Output('Laporan Pengadaan Bulan '.$tgl.'-'.$bulan[0].'.pdf','I');
         //.$param
     }
-    function laporanPengadaanTahunan_get($param){
+   function laporanPengadaanTahunan_get($param){
         // $this->load->helper('directory'); //load directory helper
         $dir = "controllers/PDF/"; // Your Path to folder
         // $map = directory_map($dir); /* This function reads the directory path specified in the first parameter and builds an array representation of it and all its contained files. */
@@ -256,207 +256,239 @@ Class Laporan extends RestController{
         // membuat halaman baru
         $pdf->AddPage();
     
-        $i = 1;
+		$i = 1;
+        $produk1 = array();
+        $produk2 = array();
+        $produk3 = array();
+        $produk4 = array();
+        $produk5 = array();
+        $produk6 = array();
+        $produk7 = array();
+        $produk8 = array();
+        $produk9 = array();
+        $produk10 = array();
+        $produk11 = array();
+        $produk12 = array();
+
+        $totalP1 = '0';
+        $totalP2 = '0';
+        $totalP3 = '0';
+        $totalP4 = '0';
+        $totalP5 = '0';
+        $totalP6 = '0';
+        $totalP7 = '0';
+        $totalP8 = '0';
+        $totalP9 = '0';
+        $totalP10 = '0';
+        $totalP11 = '0';
+        $totalP12 = '0';
         $totalPengeluaran = 0;
         $produk = array();
-        $cekNama = array();
         $bulan = explode("-", $param);
-        $data = "SELECT pengadaan_produk.id_pengadaan_produk , pengadaan_produk.total  from pengadaan_produk
+        $data = "SELECT pengadaan_produk.id_pengadaan_produk , pengadaan_produk.total, month(pengadaan_produk.created_at) as 'bulan' from pengadaan_produk
         WHERE year(pengadaan_produk.created_at)=? AND pengadaan_produk.status = 'Pesanan Selesai'
         GROUP BY pengadaan_produk.id_pengadaan_produk";
-        $hasil = $this->db->query($data,[$bulan[0]])->result();
-        for($k = 0;$k <sizeof($hasil); $k++ ){
-                $hasil2[$k] = $this->db->query($detailPengadaan,[$hasil[$k]->id_pengadaan_produk])->result();
+        $hasilProduk = $this->db->query($data,[$bulan[0]])->result();
+        
+            if(isset($hasilProduk)){
+            for($i = 0; $i<count($hasilProduk); $i++){
+                if($hasilProduk[$i]->bulan == 1){
+                    array_push($produk1,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 2){
+                    array_push($produk2,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 3){
+                    array_push($produk3,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 4){
+                    array_push($produk4,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 5){
+                    array_push($produk5,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 6){
+                    array_push($produk6,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 7){
+                    array_push($produk7,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 8){
+                    array_push($produk8,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 9){
+                    array_push($produk9,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 10){
+                    array_push($produk10,$hasilProduk[$i]->total);
+                }elseif($hasilProduk[$i]->bulan == 11){
+                    array_push($produk11,$hasilProduk[$i]->total);
+                }else{
+                    array_push($produk12,$hasilProduk[$i]->total);
+                }
             }
-        
-            if(isset($hasil2)){
-                for($l = 0 ; $l < count($hasil2) ; $l++){
-                    for($m = 0 ; $m < count($hasil2) ; $m++){
-                        if(isset($hasil2[$l][$m])){
-        
-                            array_push($produk,$hasil2[$l][$m]); 
-                        }
-                        }
-                    }
-                for($o = 0; $o<count($produk);$o++){
-                    for($p = $o +1; $p<count($produk); $p++){
-                        if($produk[$o]->nama == $produk[$p]->nama){
-                            $produk[$o]->total_harga = $produk[$o]->total_harga + $produk[$p]->total_harga;
-                            \array_splice($produk, $p, 1);
-                        }
-                    }
+
+            if(isset($produk1)){
+                for($j=0 ; $j<count($produk1); $j++){
+                    $totalP1 = $totalP1 + $produk1[$j];
                 }
-                for($q = 0; $q< count($hasil); $q++){
-                    $totalPengeluaran = $totalPengeluaran + $hasil[$q]->total;
-                }
-                
-                $tgl = $bulan[1];
-                if($bulan[1]==1){
-                    $tgl = 'Januari';
-                }else if($bulan[1]==2){
-                    $tgl = 'Februari';
-                }else if($bulan[1]==3){
-                    $tgl = 'Maret';
-                }else if($bulan[1]==4){
-                    $tgl = 'April';
-                }else if($bulan[1]==5){
-                    $tgl = 'Mei';
-                }else if($bulan[1]==6){
-                    $tgl = 'Juni';
-                }else if($bulan[1]==7){
-                    $tgl = 'Juli';
-                }else if($bulan[1]==8){
-                    $tgl = 'Agustus';
-                }else if($bulan[1]==9){
-                    $tgl = 'September';
-                }else if($bulan[1]==10){
-                    $tgl = 'Oktober';
-                }else if($bulan[1]==11){
-                    $tgl = 'November';
-                }else if($bulan[1]==12){
-                    $tgl = 'Desember';
-                }
-
-                $month_name = array("Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember");
-                $nowDate = date("d");
-                $nowMonth = date("m");
-                $nowYear = date("Y");
-                //setlocale(LC_TIME, 'id');
-                //$month_name = date('F', mktime(0, 0, 0, $nowMonth));
-                
-                $newDate = date("Y-m-d", strtotime($tgl));
-                // setting jenis font yang akan digunakan
-                $pdf->Image(APPPATH.'controllers/PDF/Logo/kouvee.png',10,10,-200);
-                // $pdf->Image(APPPATH.'controllers/PDF/Logo/kouveelogo.png',20,25,-800);
-                $pdf->Cell(10,50,'',0,1);
-                // $pdf->Image(APPPATH.'controllers/PDF/Logo/kotak.jpg',5,80,-700);
-                // Memberikan space kebawah agar tidak terlalu rapat
-                $pdf->Cell(70);
-                $pdf->SetFont('Arial','B',14);
-                $pdf->Cell(50,7,'Laporan Pengadaan Bulanan',0,1,'C');
-                $pdf->SetFont('Arial','',12);
-                $pdf->Cell(15,8,'Bulan',0,0);
-                $pdf->Cell(15,8,': '.$tgl,0,1);
-                $pdf->Cell(15,8,'Tahun',0,0);
-                $pdf->Cell(15,8,': '.$bulan[0],0,0);
-                $pdf->SetFont('Arial','',10);
-                $pdf->Cell(10,10,'',0,1);
-
-                $pdf->Cell(10,10,'',0,1);
-                // $pdf->Cell(70);
-                $pdf->SetFont('Arial','B',14);
-                $pdf->Cell(180,7,'_________________________________________________________________',0,1,'C');
-
-                $pdf->SetFont('Arial','B',10);
-                $pdf->Cell(10,6,'NO',1,0,'C');
-                $pdf->Cell(85,6,'NAMA PRODUK',1,0,'C');
-                $pdf->Cell(85,6,'JUMLAH PENGELUARAN',1,1,'C');
-
-                $pdf->SetFont('Arial','',10);
-                $i = 1;
-
-                foreach ($produk as $loop){
-            
-                        
-
-                        $pdf->Cell(10,10,$i,1,0,'C');
-                        $pdf->Cell(85,10,$loop->nama,1,0,'L');
-                        $pdf->Cell(85,10,'Rp  '.number_format($loop->total_harga,2),1,1,'L');
-
-                    
-                    $i++;
-                }
-                $pdf->Cell(10,10,'',0,1);
-        
-                $pdf->SetFont('Arial','B',16);
-                $pdf->Cell(65,10,'Total :Rp '.number_format($totalPengeluaran,2),1,1);
             }else{
-
-            
-        $tgl = $bulan[1];
-        if($bulan[1]==1){
-            $tgl = 'Januari';
-        }else if($bulan[1]==2){
-            $tgl = 'Februari';
-        }else if($bulan[1]==3){
-            $tgl = 'Maret';
-        }else if($bulan[1]==4){
-            $tgl = 'April';
-        }else if($bulan[1]==5){
-            $tgl = 'Mei';
-        }else if($bulan[1]==6){
-            $tgl = 'Juni';
-        }else if($bulan[1]==7){
-            $tgl = 'Juli';
-        }else if($bulan[1]==8){
-            $tgl = 'Agustus';
-        }else if($bulan[1]==9){
-            $tgl = 'September';
-        }else if($bulan[1]==10){
-            $tgl = 'Oktober';
-        }else if($bulan[1]==11){
-            $tgl = 'November';
-        }else if($bulan[1]==12){
-            $tgl = 'Desember';
-        }
-
-        $month_name = array("Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember");
-        $nowDate = date("d");
-        $nowMonth = date("m");
-        $nowYear = date("Y");
-        //setlocale(LC_TIME, 'id');
-        //$month_name = date('F', mktime(0, 0, 0, $nowMonth));
+                $totalP1 = 0;
+            }
+            if(isset($produk2)){
+                for($j=0 ; $j<count($produk2); $j++){
+                    $totalP2 = $totalP2 + $produk2[$j];
+                }
+            }else{
+                $totalP2 = 0;
+            }
+            if(isset($produk3)){
+                for($j=0 ; $j<count($produk3); $j++){
+                    $totalP3 = $totalP3 + $produk3[$j];
+                }
+            }else{
+                $totalP3 = 0;
+            }
+            if(isset($produk4)){
+                for($j=0 ; $j<count($produk4); $j++){
+                    $totalP4 = $totalP4 + $produk4[$j];
+                }
+            }else{
+                $totalP4 = 0;
+            }
+            if(isset($produk5)){
+                for($j=0 ; $j<count($produk5); $j++){
+                    $totalP5 = $totalP5 + $produk5[$j];
+                }
+            }else{
+                $totalP5 = 0;
+            }
+            if(isset($produk6)){
+                for($j=0 ; $j<count($produk6); $j++){
+                    $totalP6 = $totalP6 + $produk6[$j];
+                }
+            }else{
+                $totalP6 = 0;
+            }
+            if(isset($produk7)){
+                for($j=0 ; $j<count($produk7); $j++){
+                    $totalP7 = $totalP7 + $produk7[$j];
+                }
+            }else{
+                $totalP7 = 0;
+            }
+            if(isset($produk8)){
+                for($j=0 ; $j<count($produk8); $j++){
+                    $totalP8 = $totalP8 + $produk8[$j];
+                }
+            }else{
+                $totalP8 = 0;
+            }
+            if(isset($produk9)){
+                for($j=0 ; $j<count($produk9); $j++){
+                    $totalP9 = $totalP9 + $produk9[$j];
+                }
+            }else{
+                $totalP9 = 0;
+            }
+            if(isset($produk10)){
+                for($j=0 ; $j<count($produk10); $j++){
+                    $totalP10 = $totalP10 + $produk10[$j];
+                }
+            }else{
+                $totalP10 = 0;
+            }
+            if(isset($produk11)){
+                for($j=0 ; $j<count($produk11); $j++){
+                    $totalP11 = $totalP11 + $produk11[$j];
+                }
+            }else{
+                $totalP11 = 0;
+            }
+            if(isset($produk12)){
+                for($j=0 ; $j<count($produk12); $j++){
+                    $totalP12 = $totalP12 + $produk12[$j];
+                }
+		    }
+    		else{
+    			$totalP12 = 0;
+    		}
+		}
+		for($q = 0; $q< count($hasilProduk); $q++){
+			$totalPengeluaran = $totalPengeluaran + $hasilProduk[$q]->total;
+		}
+			
+		$month_name = array("Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember");
+		$nowDate = date("d");
+		$nowMonth = date("m");
+		$nowYear = date("Y");
+		//setlocale(LC_TIME, 'id');
+		//$month_name = date('F', mktime(0, 0, 0, $nowMonth));
         
-        $newDate = date("Y-m-d", strtotime($tgl));
-        // setting jenis font yang akan digunakan
-        $pdf->Image(APPPATH.'controllers/PDF/Logo/kouvee.png',10,10,-200);
-        // $pdf->Image(APPPATH.'controllers/PDF/Logo/kouveelogo.png',20,25,-800);
-        $pdf->Cell(10,50,'',0,1);
-        // $pdf->Image(APPPATH.'controllers/PDF/Logo/kotak.jpg',5,80,-700);
-        // Memberikan space kebawah agar tidak terlalu rapat
-        $pdf->Cell(70);
-        $pdf->SetFont('Arial','B',14);
-        $pdf->Cell(50,7,'Laporan Pengadaan Bulanan',0,1,'C');
-        $pdf->SetFont('Arial','',12);
-        $pdf->Cell(15,8,'Bulan',0,0);
-        $pdf->Cell(15,8,': '.$tgl,0,1);
-        $pdf->Cell(15,8,'Tahun',0,0);
-        $pdf->Cell(15,8,': '.$bulan[0],0,0);
-        $pdf->SetFont('Arial','',10);
-        $pdf->Cell(10,10,'',0,1);
+        $tgl = $param;		
+		$newDate = date("Y-m-d", strtotime($tgl));
+		// setting jenis font yang akan digunakan
+		$pdf->Image(APPPATH.'controllers/PDF/Logo/kouvee.png',10,10,-200);
+		// $pdf->Image(APPPATH.'controllers/PDF/Logo/kouveelogo.png',20,25,-800);
+		$pdf->Cell(10,50,'',0,1);
+		// $pdf->Image(APPPATH.'controllers/PDF/Logo/kotak.jpg',5,80,-700);
+		// Memberikan space kebawah agar tidak terlalu rapat
+		$pdf->Cell(70);
+		$pdf->SetFont('Arial','B',14);
+		$pdf->Cell(50,7,'Laporan Pengadaan Tahunan',0,1,'C');
+		$pdf->SetFont('Arial','',12);
+		$pdf->Cell(15,8,'Tahun',0,0);
+		$pdf->Cell(15,8,': '.$bulan[0],0,0);
+		$pdf->SetFont('Arial','',10);
+		$pdf->Cell(10,10,'',0,1);
 
-        $pdf->Cell(10,10,'',0,1);
-        // $pdf->Cell(70);
-        $pdf->SetFont('Arial','B',14);
-        $pdf->Cell(180,7,'_________________________________________________________________',0,1,'C');
+		$pdf->Cell(10,10,'',0,1);
+		// $pdf->Cell(70);
 
-        $pdf->SetFont('Arial','B',10);
-        $pdf->Cell(10,6,'NO',1,0,'C');
-        $pdf->Cell(85,6,'NAMA PRODUK',1,0,'C');
-        $pdf->Cell(85,6,'JUMLAH PENGELUARAN',1,1,'C');
+			$pdf->SetFont('Arial','B',10);
+		$pdf->Cell(10,6,'NO',1,0,'C');
+		$pdf->Cell(40,6,'BULAN',1,0,'C');
+		$pdf->Cell(120,6,'JUMLAH PENGELUARAN',1,1,'C');
+		$pdf->SetFont('Arial','',10);
+		$pdf->Cell(10,10,'1',1,0,'C');
+		$pdf->Cell(40,10,'Januari',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP1,2),1,1,'L');
+		$pdf->Cell(10,10,'2',1,0,'C');
+		$pdf->Cell(40,10,'Februari',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP2,2),1,1,'L');
+		$pdf->Cell(10,10,'3',1,0,'C');
+		$pdf->Cell(40,10,'Maret',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP3,2),1,1,'L');
+		$pdf->Cell(10,10,'4',1,0,'C');
+		$pdf->Cell(40,10,'April',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP4,2),1,1,'L');
+		$pdf->Cell(10,10,'5',1,0,'C');
+		$pdf->Cell(40,10,'Mei',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP5,2),1,1,'L');
+		$pdf->Cell(10,10,'6',1,0,'C');
+		$pdf->Cell(40,10,'Juni',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP6,2),1,1,'L');
+		$pdf->Cell(10,10,'7',1,0,'C');
+		$pdf->Cell(40,10,'Juli',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP7,2),1,1,'L');
+		$pdf->Cell(10,10,'8',1,0,'C');
+		$pdf->Cell(40,10,'Agustus',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP8,2),1,1,'L');
+		$pdf->Cell(10,10,'9',1,0,'C');
+		$pdf->Cell(40,10,'September',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP9,2),1,1,'L');
+		$pdf->Cell(10,10,'10',1,0,'C');
+		$pdf->Cell(40,10,'October',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP10,2),1,1,'L');
+		$pdf->Cell(10,10,'11',1,0,'C');
+		$pdf->Cell(40,10,'November',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP11,2),1,1,'L');
+		$pdf->Cell(10,10,'12',1,0,'C');
+		$pdf->Cell(40,10,'Desember',1,0,'L');
+		$pdf->Cell(120,10,'Rp '.number_format($totalP12,2),1,1,'L');
+		$pdf->Cell(10,10,'',0,1);
 
-        $pdf->SetFont('Arial','',10);
-        $i = 1;
+		$pdf->SetFont('Arial','B',16);
+		$pdf->Cell(65,10,'Total :Rp '.number_format($totalPengeluaran,2),1,1);
 
-                $pdf->Cell(10,10,$i,1,0,'C');
-                $pdf->Cell(85,10,'-',1,0,'L');
-                $pdf->Cell(85,10,'Rp - ',1,1,'L');
-
-            
-  
-        
-        $pdf->Cell(10,10,'',0,1);
- 
-        $pdf->SetFont('Arial','B',16);
-        $pdf->Cell(65,10,'Total :Rp -',1,1);
-    }
 
         $now = date("d-m-Y");
         $pdf->Cell(10,20,'',0,1);
         $pdf->Cell(135);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(30,7,'Dicetak tanggal '.$nowDate.' '.$month_name[intval($nowMonth)-1].' '.$nowYear,0,1,'C');
-        $pdf->Output('Laporan Pengadaan Bulan '.$tgl.'-'.$bulan[0].'.pdf','D');
+        $pdf->Output('Laporan Pengadaan Tahunan '.'-'.$bulan[0].'.pdf','D');
         //.$param
     }
     function laporanProdukTerlaris_get($param){
@@ -907,80 +939,152 @@ Class Laporan extends RestController{
                         }
                         }
                     }
-                    for($o = 0; $o<count($layanan1);$o++){
-                        if($layanan1[$o]->jumlah > $jumlahMax1){
+                   for($o = 0; $o<count($layanan1);$o++){
+                        for($p = $o +1; $p<count($layanan1); $p++){
+                            if($layanan1[$o]->nama == $layanan1[$p]->nama){
+                                
+                                $layanan1[$o]->jumlah = $layanan1[$o]->jumlah + $layanan1[$p]->jumlah;
+                            }
+                        }
+                        if($layanan1[$o]->jumlah > $jumlahMax1){                         
                             $jumlahMax1 = $layanan1[$o]->jumlah;
                             $layananMax1 = $layanan1[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan2);$o++){
+                        for($p = $o +1; $p<count($layanan2); $p++){
+                            if($layanan2[$o]->nama == $layanan2[$p]->nama){
+                                
+                                $layanan2[$o]->jumlah = $layanan2[$o]->jumlah + $layanan2[$p]->jumlah;
+                            }
+                        }
                         if($layanan2[$o]->jumlah > $jumlahMax2){
                             $jumlahMax2 = $layanan2[$o]->jumlah;
                             $layananMax2 = $layanan2[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan3);$o++){
+                        for($p = $o +1; $p<count($layanan3); $p++){
+                            if($layanan3[$o]->nama == $layanan3[$p]->nama){
+                                
+                                $layanan3[$o]->jumlah = $layanan3[$o]->jumlah + $layanan3[$p]->jumlah;
+                            }
+                        }
                         if($layanan3[$o]->jumlah > $jumlahMax3){
                             $jumlahMax3 = $layanan3[$o]->jumlah;
                             $layananMax3 = $layanan3[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan4);$o++){
+                        for($p = $o +1; $p<count($layanan4); $p++){
+                            if($layanan4[$o]->nama == $layanan4[$p]->nama){
+                                
+                                $layanan4[$o]->jumlah = $layanan4[$o]->jumlah + $layanan4[$p]->jumlah;
+                            }
+                        }
                         if($layanan4[$o]->jumlah > $jumlahMax4){
                             $jumlahMax4 = $layanan4[$o]->jumlah;
                             $layananMax4 = $layanan4[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan5);$o++){
+                        for($p = $o +1; $p<count($layanan5); $p++){
+                            if($layanan5[$o]->nama == $layanan5[$p]->nama){
+                                
+                                $layanan5[$o]->jumlah = $layanan5[$o]->jumlah + $layanan5[$p]->jumlah;
+                            }
+                        }
                         if($layanan5[$o]->jumlah > $jumlahMax5){
                             $jumlahMax5 = $layanan5[$o]->jumlah;
                             $layananMax5 = $layanan5[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan6);$o++){
+                        for($p = $o +1; $p<count($layanan6); $p++){
+                            if($layanan6[$o]->nama == $layanan6[$p]->nama){
+                                
+                                $layanan6[$o]->jumlah = $layanan6[$o]->jumlah + $layanan6[$p]->jumlah;
+                            }
+                        }
                         if($layanan6[$o]->jumlah > $jumlahMax6){
                             $jumlahMax6= $layanan6[$o]->jumlah;
                             $layananMax6 = $layanan6[$o]->nama;
-                        }
                     }
                     for($o = 0; $o<count($layanan7);$o++){
+                        for($p = $o +1; $p<count($layanan7); $p++){
+                            if($layanan7[$o]->nama == $layanan7[$p]->nama){
+                                
+                                $layanan7[$o]->jumlah = $layanan7[$o]->jumlah + $layanan7[$p]->jumlah;
+                            }
+                        }
                         if($layanan7[$o]->jumlah > $jumlahMax7){
                             $jumlahMax7 = $layanan7[$o]->jumlah;
                             $layananMax7 = $layanan7[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan8);$o++){
+                        for($p = $o +1; $p<count($layanan8); $p++){
+                            if($layanan8[$o]->nama == $layanan8[$p]->nama){
+                                
+                                $layanan8[$o]->jumlah = $layanan8[$o]->jumlah + $layanan8[$p]->jumlah;
+                            }
+                        }
                         if($layanan8[$o]->jumlah > $jumlahMax8){
                             $jumlahMax8 = $layanan8[$o]->jumlah;
                             $layananMax8 = $layanan8[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan9);$o++){
+                        for($p = $o +1; $p<count($layanan9); $p++){
+                            if($layanan9[$o]->nama == $layanan9[$p]->nama){
+                                
+                                $layanan9[$o]->jumlah = $layanan9[$o]->jumlah + $layanan9[$p]->jumlah;
+                            }
+                        }
                         if($layanan9[$o]->jumlah > $jumlahMax9){
                             $jumlahMax9 = $layanan9[$o]->jumlah;
                             $layananMax9= $layanan9[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan10);$o++){
+                        for($p = $o +1; $p<count($layanan10); $p++){
+                            if($layanan10[$o]->nama == $layanan10[$p]->nama){
+                                
+                                $layanan10[$o]->jumlah = $layanan10[$o]->jumlah + $layanan10[$p]->jumlah;
+                            }
+                        }
                         if($layanan10[$o]->jumlah > $jumlahMax10){
                             $jumlahMax10 = $layanan10[$o]->jumlah;
                             $layananMax10 = $layanan10[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan11);$o++){
+                        for($p = $o +1; $p<count($layanan11); $p++){
+                            if($layanan11[$o]->nama == $layanan11[$p]->nama){
+                                
+                                $layanan11[$o]->jumlah = $layanan11[$o]->jumlah + $layanan11[$p]->jumlah;
+                            }
+                        }
                         if($layanan11[$o]->jumlah > $jumlahMax11){
                             $jumlahMax11 = $layanan11[$o]->jumlah;
                             $layananMax11= $layanan11[$o]->nama;
                         }
                     }
                     for($o = 0; $o<count($layanan12);$o++){
+                        for($p = $o +1; $p<count($layanan12); $p++){
+                            if($layanan12[$o]->nama == $layanan12[$p]->nama){
+                                
+                                $layanan12[$o]->jumlah = $layanan12[$o]->jumlah + $layanan12[$p]->jumlah;
+                            }
+                        }
                         if($layanan12[$o]->jumlah > $jumlahMax12){
                             $jumlahMax12 = $layanan12[$o]->jumlah;
                             $layananMax12 = $layanan12[$o]->nama;
                         }
-                    }
-            
-            }else{
+					}
+				}
+			
+				}else{
                 $jumlahMax1 = '0';
                 $jumlahMax2 = '0';
                 $jumlahMax3 = '0';
