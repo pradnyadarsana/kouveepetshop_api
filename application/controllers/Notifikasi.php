@@ -9,7 +9,15 @@ Class Notifikasi extends RestController{
         parent::__construct();
         $this->load->model('NotifikasiModel');
         $this->load->library('form_validation');
-    }
+	}
+	
+	public function getWithJoin_get() {
+		$this->db->select('notifikasi.id_produk, produk.id_produk, produk.nama, produk.gambar, notifikasi.created_at');
+		$this->db->from('notifikasi');
+		$this->db->join('id_produk', 'notifikasi.id_produk = produk.id_produk');
+		$this->db->order_by('notifikasi.created_at ASC');
+		return $this->returnData($this->db->get()->result(), false);
+	}
 
     public function index_get(){
         return $this->returnData($this->db->get('notifikasi')->result(), false);
