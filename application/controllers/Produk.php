@@ -11,6 +11,30 @@ Class Produk extends RestController{
         $this->load->library('form_validation');
     }
 
+    public function getProdukMin_get() {
+        $data = "SELECT produk.id_produk , produk.nama, produk.min_stok, produk.jumlah_stok  from produk
+        WHERE  produk.jumlah_stok < produk.min_stok and produk.aktif = 1
+        GROUP BY produk.id_produk";
+        $hasil = $this->db->query($data)->result();
+        return $this->returnData($hasil, false);
+    }
+    public function getProdukASC_get() {
+        $data = "SELECT produk.id_produk , produk.nama, produk.min_stok, produk.jumlah_stok  from produk
+        WHERE   produk.aktif = 1
+        GROUP BY produk.id_produk
+        ORDER BY produk.jumlah_stok ASC";
+        $hasil = $this->db->query($data)->result();
+        return $this->returnData($hasil, false);
+    }
+    public function getProdukDESC_get() {
+        $data = "SELECT produk.id_produk , produk.nama, produk.min_stok, produk.jumlah_stok  from produk
+        WHERE   produk.aktif = 1
+        GROUP BY produk.id_produk
+        ORDER BY produk.jumlah_stok DESC";
+        $hasil = $this->db->query($data)->result();
+        return $this->returnData($hasil, false);
+    }
+
     public function index_get(){
         return $this->returnData($this->db->get_where('produk', ["aktif" => 1])->result(), false);
     }
