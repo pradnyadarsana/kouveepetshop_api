@@ -147,17 +147,17 @@ Class CetakStruk extends RestController{
                 $pdf->Cell(10,10,$i,1,0,'C');
                 $pdf->Cell(55,10,$layanan->nama,1,0,'C');
                 $pdf->Cell(35,10,$ukuran->nama,1,0,'C');
-                $pdf->Cell(30,10,'Rp '.$harga_layanan->harga,1,0,'C');
+                $pdf->Cell(30,10,'Rp '.number_format($harga_layanan->harga,2),1,0,'C');
                 $pdf->Cell(20,10,$loop->jumlah,1,0,'C');
-                $pdf->Cell(30,10,'Rp '.$loop->total_harga,1,1,'C');
+                $pdf->Cell(30,10,'Rp '.number_format($loop->total_harga,2),1,1,'C');
             }
             $i++;
         }
         $pdf->Cell(10,10,'',0,1);
-        $pdf->Cell(45,6,'Sub Total :Rp   '.$subtotal,0,1);
-        $pdf->Cell(45,6,'Diskon     :Rp   '.$diskon,0,1);
+        $pdf->Cell(45,6,'Sub Total :Rp   '.number_format($subtotal,2),0,1);
+        $pdf->Cell(45,6,'Diskon     :Rp   '.number_format($diskon),0,1);
         $pdf->SetFont('Arial','B',16);
-        $pdf->Cell(60,10,'Total       :Rp '.$total,1,1);
+        $pdf->Cell(65,10,'Total       :Rp '.number_format($total),1,1);
 
         $now = date("d-m-Y");
         $pdf->Cell(10,20,'',0,1);
@@ -212,6 +212,7 @@ Class CetakStruk extends RestController{
 
                 $nama_jenis_hewan = $jenis_hewan->nama;
                 $nama_hewan = $hewan->nama;
+                
                 $nama_pelanggan = $pelanggan->nama;
                 $no_telp = $pelanggan->telp;
             }
@@ -291,17 +292,17 @@ Class CetakStruk extends RestController{
                 $produk = $this->db->get_where('produk', ["id_produk" => $id_produk])->row();
                 $pdf->Cell(10,10,$i,1,0,'C');
                 $pdf->Cell(70,10,$produk->nama,1,0,'L');
-                $pdf->Cell(40,10,'Rp '.$produk->harga,1,0,'C');
+                $pdf->Cell(40,10,'Rp '.number_format($produk->harga,2),1,0,'C');
                 $pdf->Cell(20,10,$loop->jumlah,1,0,'C');
-                $pdf->Cell(40,10,'Rp '.$loop->total_harga,1,1,'C');
+                $pdf->Cell(40,10,'Rp '.number_format($loop->total_harga,2),1,1,'C');
             }
             $i++;
         }
         $pdf->Cell(10,10,'',0,1);
-        $pdf->Cell(45,6,'Sub Total :Rp   '.$subtotal,0,1);
-        $pdf->Cell(45,6,'Diskon     :Rp   '.$diskon,0,1);
+        $pdf->Cell(45,6,'Sub Total :Rp   '.number_format($subtotal,2),0,1);
+        $pdf->Cell(45,6,'Diskon     :Rp   '.number_format($diskon,2),0,1);
         $pdf->SetFont('Arial','B',16);
-        $pdf->Cell(65,10,'Total :Rp '.$total,1,1);
+        $pdf->Cell(65,10,'Total :Rp '.number_format($total,2),1,1);
 
         $now = date("d-m-Y");
         $pdf->Cell(10,20,'',0,1);
